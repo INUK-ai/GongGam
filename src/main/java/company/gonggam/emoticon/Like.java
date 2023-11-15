@@ -1,5 +1,6 @@
-package company.gonggam.article;
+package company.gonggam.emoticon;
 
+import company.gonggam.article.Article;
 import company.gonggam.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "article_tb")
-public class Article {
+@Table(name = "like_tb")
+public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +19,6 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
-
-    private String title;
-    private String content;
-
-    private Long likeCount;
-    private Long angryCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Article article;
 }
