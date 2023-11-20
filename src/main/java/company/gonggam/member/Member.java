@@ -22,4 +22,7 @@ public class Member {
     private String phoneNumber;
     private String password;
     private LocalDateTime created_at;
+
+    @Enumerated(value = EnumType.STRING)
+    Authority authority;
 }
