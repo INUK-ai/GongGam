@@ -21,12 +21,12 @@ public class Question extends BaseTimeEntity {
     private String content;
 
     @Column
-    private int order;
+    private int level;
 
     @Builder
-    public Question(Long id, String content, int order) {
+    public Question(Long id, String content, int level) {
         this.id = id;
         this.content = content;
-        this.order = order;
+        this.level = level;
     }
 }

@@ -1,15 +1,12 @@
 package company.gonggam.question.domain;
 
 import company.gonggam.BaseTimeEntity;
-import company.gonggam.member.Member;
-import company.gonggam.question.domain.Question;
+import company.gonggam.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -21,7 +18,7 @@ public class Answer extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_id")
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +27,6 @@ public class Answer extends BaseTimeEntity {
 
     @Column(columnDefinition="TEXT")
     private String content;
-    @ColumnDefault("now()")
-    private LocalDateTime created_at;
+    @ColumnDefault("false")
+    private boolean disclosure;
 }

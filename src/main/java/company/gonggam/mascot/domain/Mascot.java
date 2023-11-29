@@ -1,12 +1,15 @@
-package company.gonggam.mascot;
+package company.gonggam.mascot.domain;
 
 import company.gonggam.BaseTimeEntity;
-import company.gonggam.member.Member;
+import company.gonggam.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -15,18 +18,18 @@ import lombok.NoArgsConstructor;
 public class Mascot extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
     private Member member;
+    @OneToMany(mappedBy = "mascot", cascade = CascadeType.REMOVE)
+    private List<MascotQuestion> dailyQuestionList = new LinkedList<>();
 
     @Column(length = 20, nullable = false, unique = true)
     private String name;
     @Column
     private int level;
-    @Column
-    private int experience;
 
     @Builder
     public Mascot(Long id, Member member, String name) {
@@ -34,6 +37,5 @@ public class Mascot extends BaseTimeEntity {
         this.member = member;
         this.name = name;
         this.level = 0;
-        this.experience = 0;
     }
 }

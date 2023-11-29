@@ -1,4 +1,4 @@
-package company.gonggam.member;
+package company.gonggam.member.domain;
 
 import company.gonggam.BaseTimeEntity;
 import company.gonggam.question.domain.Answer;
@@ -34,18 +34,24 @@ public class Member extends BaseTimeEntity {
     @Column(length = 100, nullable = false, unique = true)
     private String password;
 
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+    @Column(nullable = true)
+    private AgeGroup ageGroup;
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'USER'")
-    @Column(length = 50)
     private Authority authority;
 
     @Builder
-    public Member(Long id, String name, String email, String phoneNumber, String password, Authority authority) {
+    public Member(Long id, String name, String email, String phoneNumber, String password, Gender gender, AgeGroup ageGroup, Authority authority) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.gender = gender;
+        this.ageGroup = ageGroup;
         this.authority = authority;
     }
 }

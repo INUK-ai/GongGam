@@ -1,7 +1,6 @@
 package company.gonggam;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,11 +11,15 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTimeEntity {
+public abstract class BaseTimeEntity {
 
+    @Column(updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private LocalDateTime updatedDate;
 }
