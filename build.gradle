@@ -52,6 +52,10 @@ dependencies {
 
 	// 테스트 기능
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core:4.8.0'
+
+	// swagger-ui
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
 	// 모니터링 용
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
