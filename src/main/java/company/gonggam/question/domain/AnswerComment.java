@@ -6,16 +6,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "answer_tb")
-public class Answer extends BaseTimeEntity {
+@Table(name = "answer_comment_tb")
+public class AnswerComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +21,9 @@ public class Answer extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
-    private Question question;
-    @OneToMany(mappedBy = "answer", cascade = CascadeType.REMOVE)
-    private List<AnswerComment> comments = new ArrayList<>();
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 
-    @Column(columnDefinition="TEXT")
-    private String content;
-    @ColumnDefault("false")
-    private boolean disclosure;
+    @Column(columnDefinition = "TEXT")
+    private String comment;
 }
