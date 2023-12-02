@@ -32,8 +32,7 @@ public class Mascot extends BaseTimeEntity {
     private int level;
 
     @Builder
-    public Mascot(Long id, Member member, String name) {
-        this.id = id;
+    public Mascot(Member member, String name) {
         this.member = member;
         this.name = name;
         this.level = 0;

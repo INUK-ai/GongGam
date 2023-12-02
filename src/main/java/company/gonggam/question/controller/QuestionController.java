@@ -1,52 +1,42 @@
 package company.gonggam.question.controller;
 
 import company.gonggam._core.utils.ApiUtils;
+import company.gonggam.question.dto.QuestionRequestDTO;
+import company.gonggam.question.dto.QuestionResponseDTO;
+import company.gonggam.question.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/question")
 public class QuestionController {
 
+    private final QuestionService questionService;
+
     /*
-        답변을 한 질문리스트 조회
+        일일 질문 확인
      */
-    @GetMapping("/myQuestion")
-    public ResponseEntity<?> getMyQuestionList() {
-        return ResponseEntity.ok().body(ApiUtils.success(null));
+    @GetMapping("/daily/question")
+    public ResponseEntity<?> getDailyQuestion() {
+
+        QuestionResponseDTO.getDailyQuestionDTO responseDTO = questionService.getDailyQuestion();
+
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
 
     /*
-        질문을 한 답변 확인
+        일일 질문 답변
      */
-    @GetMapping("/{answerId}")
-    public ResponseEntity<?> getMyAnswerList(@PathVariable("answerId") Long answerId) {
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
+    @PostMapping("/daily/question/answer")
+    public ResponseEntity<?> answerDailyQuestion(QuestionRequestDTO.answerDailyQuestionDTO requestDTO) {
 
-    /*
-        답변 공개 여부 수정
-     */
-    @PatchMapping("/{answerId}/disclosure")
-    public ResponseEntity<?> changeDisclosurePolicy(@PathVariable("answerId") Long answerId) {
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
+        questionService.answerDailyQuestion(requestDTO);
 
-    /*
-        답변에 대한 현재 생각 추가
-     */
-    @PostMapping("/{answerId}/comment")
-    public ResponseEntity<?> addNewAnswer(@PathVariable("answerId") Long answerId) {
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
-
-    /*
-        해당 질문에 대한 답변 조회
-     */
-    @GetMapping("/{answerId}/otherAnswer")
-    public ResponseEntity<?> getOtherAnswerList(@PathVariable("answerId") Long answerId) {
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 }

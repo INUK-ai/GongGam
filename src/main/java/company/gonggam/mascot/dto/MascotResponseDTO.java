@@ -8,11 +8,4 @@ public class MascotResponseDTO {
     ) {
 
     }
-
-    // 일일 질문 확인
-    public record getDailyQuestionDTO(
-
-    ) {
-
-    }
 }

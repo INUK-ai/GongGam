@@ -5,12 +5,10 @@ import company.gonggam.mascot.service.MascotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static company.gonggam.mascot.dto.MascotRequestDTO.*;
-import static company.gonggam.mascot.dto.MascotResponseDTO.*;
+import static company.gonggam.mascot.dto.MascotResponseDTO.getMascotDTO;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,27 +26,5 @@ public class MascotController {
         getMascotDTO responseDTO = mascotService.getMascot();
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
-    }
-
-    /*
-        일일 질문 확인
-     */
-    @GetMapping("/daily/question")
-    public ResponseEntity<?> getDailyQuestion() {
-
-        getDailyQuestionDTO responseDTO = mascotService.getDailyQuestion();
-
-        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
-    }
-
-    /*
-        일일 질문 답변
-     */
-    @PostMapping("/daily/question/answer")
-    public ResponseEntity<?> answerDailyQuestion(answerDailyQuestionDTO requestDTO) {
-
-        mascotService.answerDailyQuestion(requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 }

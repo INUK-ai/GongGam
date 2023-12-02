@@ -1,9 +1,10 @@
-package company.gonggam.question.domain;
+package company.gonggam.answer.domain;
 
 import company.gonggam.BaseTimeEntity;
 import company.gonggam.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,15 @@ public class AnswerComment extends BaseTimeEntity {
 
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    @Builder
+    public AnswerComment(Member member, Answer answer, String comment) {
+        this.member = member;
+        this.answer = answer;
+        this.comment = comment;
+    }
+
+    public void setAnswer(Answer answer) {
+        answer.getComments().add(this);
+    }
 }

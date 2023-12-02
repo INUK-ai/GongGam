@@ -1,9 +1,11 @@
-package company.gonggam.question.domain;
+package company.gonggam.answer.domain;
 
 import company.gonggam.BaseTimeEntity;
 import company.gonggam.member.domain.Member;
+import company.gonggam.question.domain.Question;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -34,4 +36,12 @@ public class Answer extends BaseTimeEntity {
     private String content;
     @ColumnDefault("false")
     private boolean disclosure;
+
+    @Builder
+    public Answer(Member member, Question question, String content, boolean disclosure) {
+        this.member = member;
+        this.question = question;
+        this.content = content;
+        this.disclosure = disclosure;
+    }
 }
