@@ -1,6 +1,7 @@
 package company.gonggam.member.controller;
 
 import company.gonggam._core.utils.ApiUtils;
+import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,9 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(loginDTO requestDTO) {
 
-        memberService.login(requestDTO);
+        MemberResponseDTO.authTokenDTO responseDTO = memberService.login(requestDTO);
 
-        return ResponseEntity.ok().body(ApiUtils.success(null));
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
 
     /*
@@ -56,9 +57,9 @@ public class MemberController {
     @PostMapping("/kakao/login")
     public ResponseEntity<?> kakaoLogin(kakaoLoginDTO requestDTO) {
 
-        memberService.kakaoLogin(requestDTO);
+        MemberResponseDTO.authTokenDTO responseDTO = memberService.kakaoLogin(requestDTO);
 
-        return ResponseEntity.ok().body(ApiUtils.success(null));
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
 
     /*
@@ -78,8 +79,8 @@ public class MemberController {
     @PostMapping("/naver/login")
     public ResponseEntity<?> naverLogin(naverLoginDTO requestDTO) {
 
-        memberService.naverLogin(requestDTO);
+        MemberResponseDTO.authTokenDTO responseDTO = memberService.naverLogin(requestDTO);
 
-        return ResponseEntity.ok().body(ApiUtils.success(null));
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
 }
