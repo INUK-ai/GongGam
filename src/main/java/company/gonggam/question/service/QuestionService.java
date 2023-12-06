@@ -19,6 +19,14 @@ public class QuestionService {
      */
     public QuestionResponseDTO.getDailyQuestionDTO getDailyQuestion() {
 
+        // 회원 확인
+
+        // 마스코트 확인
+
+        // MascotQuestion 확인
+
+        // MascotQuestionList 에서 하나 가져와서 반환
+
         return new QuestionResponseDTO.getDailyQuestionDTO();
     }
 
@@ -27,5 +35,12 @@ public class QuestionService {
      */
     public void answerDailyQuestion(QuestionRequestDTO.answerDailyQuestionDTO requestDTO) {
 
+        // 회원 확인
+
+        // 마스코트 확인
+
+        // 답변 저장
+
+        // MascotQuestion 에서 해당 Question 삭제
     }
 }
