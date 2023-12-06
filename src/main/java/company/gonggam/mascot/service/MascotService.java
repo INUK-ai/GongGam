@@ -1,5 +1,6 @@
 package company.gonggam.mascot.service;
 
+import company.gonggam.mascot.repository.MascotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,17 @@ import static company.gonggam.mascot.dto.MascotResponseDTO.getMascotDTO;
 @Service
 public class MascotService {
 
+    private final MascotRepository mascotRepository;
+
     /*
         메인 페이지
         - mascot 반환
      */
     public getMascotDTO getMascot() {
+        
+        // 회원 확인
+        
+        // 해당 회원의 Mascot 가져오기
 
         return new getMascotDTO();
     }
