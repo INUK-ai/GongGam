@@ -2,6 +2,7 @@ package company.gonggam.question.service;
 
 import company.gonggam.question.dto.QuestionRequestDTO;
 import company.gonggam.question.dto.QuestionResponseDTO;
+import company.gonggam.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class QuestionService {
+
+    private final QuestionRepository questionRepository;
 
     /*
         일일 질문 확인
