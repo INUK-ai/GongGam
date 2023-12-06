@@ -22,6 +22,9 @@ public class MemberController {
      */
     @PostMapping("/signUp")
     public ResponseEntity<?> signUp(signUpDTO requestDTO) {
+
+        memberService.signUp(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 
@@ -30,6 +33,9 @@ public class MemberController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(loginDTO requestDTO) {
+
+        memberService.login(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 
@@ -38,6 +44,9 @@ public class MemberController {
      */
     @PostMapping("/kakao/signUp")
     public ResponseEntity<?> kakaoSignUp(kakaoSignUpDTO requestDTO) {
+
+        memberService.kakaoSignUp(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 
@@ -46,6 +55,9 @@ public class MemberController {
      */
     @PostMapping("/kakao/login")
     public ResponseEntity<?> kakaoLogin(kakaoLoginDTO requestDTO) {
+
+        memberService.kakaoLogin(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 
@@ -54,6 +66,9 @@ public class MemberController {
      */
     @PostMapping("/naver/signUp")
     public ResponseEntity<?> naverSignUp(naverSignUpDTO requestDTO) {
+
+        memberService.naverSignUp(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 
@@ -62,6 +77,9 @@ public class MemberController {
      */
     @PostMapping("/naver/login")
     public ResponseEntity<?> naverLogin(naverLoginDTO requestDTO) {
+
+        memberService.naverLogin(requestDTO);
+
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 }
