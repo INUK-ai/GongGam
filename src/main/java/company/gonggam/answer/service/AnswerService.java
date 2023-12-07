@@ -1,8 +1,10 @@
 package company.gonggam.answer.service;
 
+import company.gonggam.answer.domain.Answer;
 import company.gonggam.answer.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +30,11 @@ public class AnswerService {
         // 해당 회원의 AnswerList 조회
         
         // 해당 AnswerList 에 맞는 QuestionList 조회
+        // 조회 대신 Answer.getQuestion 과 stream 을 사용해서 넘기는 방식으로 변경
+        Page<Answer> answers = null;
         
         // QuestionList 반환
-        
-        return new getMyQuestionListDTO();
+        return new getMyQuestionListDTO(answers);
     }
 
     /*
@@ -42,10 +45,9 @@ public class AnswerService {
         // 회원 확인
 
         // 해당 Answer 조회
-
-        // 해당 Answer 의 Comment 존재 여부 확인
+        Answer answer = null;
         
-        return new getMyAnswerDTO();
+        return new getMyAnswerDTO(answer);
     }
 
     /*
@@ -84,11 +86,8 @@ public class AnswerService {
         // 회원 확인
 
         // 해당 Answer 조회
+        Answer answer = null;
 
-        // 해당 Question 조회
-
-        // 해당 Question 을 가지고 있는 AnswerList 확인
-
-        return new getOtherAnswerListDTO();
+        return new getOtherAnswerListDTO(answer);
     }
 }

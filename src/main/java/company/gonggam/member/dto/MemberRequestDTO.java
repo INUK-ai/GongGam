@@ -3,12 +3,20 @@ package company.gonggam.member.dto;
 public class MemberRequestDTO {
 
     // 기본 회원 가입
-    public record signUpDTO() {
+    public record signUpDTO(
+            String name,
+            String email,
+            String phoneNumber,
+            String password
+    ) {
 
     }
 
     // 기본 로그인
-    public record loginDTO() {
+    public record loginDTO(
+            String email,
+            String password
+    ) {
 
     }
 

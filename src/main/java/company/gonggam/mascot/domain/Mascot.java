@@ -2,6 +2,7 @@ package company.gonggam.mascot.domain;
 
 import company.gonggam.BaseTimeEntity;
 import company.gonggam.member.domain.Member;
+import company.gonggam.question.domain.MascotQuestion;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
