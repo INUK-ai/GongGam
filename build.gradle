@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.3'
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10" // Querydsl 플러그인 사용 처리
 }
 
 group = 'company'
@@ -38,6 +39,12 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	// QueryDSL 설정
+	implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	// 메일 관련
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
@@ -52,6 +59,10 @@ dependencies {
 
 	// 테스트 기능
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core:4.8.0'
+
+	// swagger-ui
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
 	// 모니터링 용
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -74,4 +85,39 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Querydsl 프로젝트 build Directory 설정
+def generated = "${project.buildDir}/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = generated
+}
+
+sourceSets {
+	main.java.srcDir generated
+}
+
+// compileQuerydsl Task 실행시 clean + compileQuerydsl 할 수 있도록 동작 변경
+tasks.register('cleanGenerated', Delete) {
+	delete generated
+}
+
+clean.dependsOn(cleanGenerated)
+
+tasks.named("compileQuerydsl").configure {
+	dependsOn(clean)
+}
+
+
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
 }
