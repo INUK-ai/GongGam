@@ -7,7 +7,8 @@ public enum AgeGroup {
     THIRTY_TO_THIRTYNINE,
     FORTY_TO_FORTYNINE,
     FIFTY_TO_FIFTYNINE,
-    SIXTY_ABOVE;
+    SIXTY_ABOVE,
+    UNKNOWN;
 
     public static AgeGroup fromInt(int age) {
         if (age >= 0 && age <= 9) {
@@ -22,8 +23,10 @@ public enum AgeGroup {
             return AgeGroup.FORTY_TO_FORTYNINE;
         } else if (age >= 50 && age <= 59) {
             return AgeGroup.FIFTY_TO_FIFTYNINE;
-        } else {
+        } else if (age >= 60) {
             return AgeGroup.SIXTY_ABOVE;
+        } else {
+            return AgeGroup.UNKNOWN;
         }
     }
 }

@@ -29,26 +29,23 @@ public class Member extends BaseTimeEntity {
     private String name;
     @Column(length = 100, nullable = false, unique = true)
     private String email;
-    @Column(length = 20, nullable = false, unique = true)
-    private String phoneNumber;
     @Column(length = 100, nullable = false, unique = true)
     private String password;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Column(nullable = true)
+    @Column(nullable = false)
     private AgeGroup ageGroup;
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'USER'")
     private Authority authority;
 
     @Builder
-    public Member(Long id, String name, String email, String phoneNumber, String password, Gender gender, AgeGroup ageGroup, Authority authority) {
+    public Member(Long id, String name, String email, String password, Gender gender, AgeGroup ageGroup, Authority authority) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.phoneNumber = phoneNumber;
         this.password = password;
         this.gender = gender;
         this.ageGroup = ageGroup;

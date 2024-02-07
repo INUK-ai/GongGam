@@ -3,9 +3,11 @@ package company.gonggam.member.controller;
 import company.gonggam._core.utils.ApiUtils;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +24,7 @@ public class MemberController {
         기본 회원 가입
      */
     @PostMapping("/signUp")
-    public ResponseEntity<?> signUp(signUpDTO requestDTO) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody signUpDTO requestDTO) {
 
         memberService.signUp(requestDTO);
 
@@ -33,7 +35,7 @@ public class MemberController {
         기본 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(loginDTO requestDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody loginDTO requestDTO) {
 
         MemberResponseDTO.authTokenDTO responseDTO = memberService.login(requestDTO);
 
