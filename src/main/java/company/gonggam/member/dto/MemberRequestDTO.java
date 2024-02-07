@@ -15,6 +15,7 @@ public class MemberRequestDTO {
             String email,
             @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "패스워드는 최소 8자 이상이어야 하며, 대소문자, 숫자, 특수문자를 포함해야 합니다.")
             String password,
+            String confirmPassword,
             String gender,
             Integer age
     ) {

@@ -37,8 +37,10 @@ public class MemberService {
         checkDuplicatedEmail(requestDTO.email());
 
         // 비밀번호 확인
+        checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
+
         // 이메일 확인은 따로 API를 만들 것
-        // 이메일 확인은 이후 verified 여부를 redis에서 가져와 확인
+        // 이메일 확인은 이후 verified 여부를 redis에서 가져와 확
 
         // 회원 생성
         Member member = newMember(requestDTO);
@@ -52,6 +54,12 @@ public class MemberService {
 
         if(member.isPresent()) {
             throw new ApplicationException(ErrorCode.SAME_EMAIL);
+        }
+    }
+
+    private void checkValidPassword(String password, String confirmPassword) {
+        if(!password.equals(confirmPassword)) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
 

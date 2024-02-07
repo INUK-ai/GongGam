@@ -10,7 +10,8 @@ public enum ErrorCode {
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "GONGGAM-000", "Internal server error"),
     SAME_EMAIL(HttpStatus.CONFLICT, "USER-001", "이미 가입한 이메일입니다."),
-    EMAIL_STRUCTURE(HttpStatus.FORBIDDEN,"USER-002","이메일 형식으로 작성해주세요");
+    EMAIL_STRUCTURE(HttpStatus.FORBIDDEN,"USER-002","이메일 형식으로 작성해주세요"),
+    INVALID_PASSWORD(HttpStatus.CONFLICT, "USER-003", "비밀번호가 유효하지 않습니다.");
 
     /*
         예시)
