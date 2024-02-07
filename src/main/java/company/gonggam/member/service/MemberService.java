@@ -2,6 +2,7 @@ package company.gonggam.member.service;
 
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
+import company.gonggam._core.utils.RedisUtils;
 import company.gonggam.member.domain.AgeGroup;
 import company.gonggam.member.domain.Gender;
 import company.gonggam.member.domain.Member;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -25,6 +27,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final RedisUtils redisUtils;
+
+    private final String EMAIL_PREFIX = "email:";
+    private final long EMAIL_CODE_EXPIRE_TIME = 10L;
+    private final long EMAIL_VALIDATATION_TIME = 7L;
 
     /*
         기본 회원 가입
@@ -39,8 +46,7 @@ public class MemberService {
         // 비밀번호 확인
         checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
 
-        // 이메일 확인은 따로 API를 만들 것
-        // 이메일 확인은 이후 verified 여부를 redis에서 가져와 확
+        // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
 
         // 회원 생성
         Member member = newMember(requestDTO);
@@ -67,8 +73,26 @@ public class MemberService {
     public void checkEmail(String email) {
 
         // emailService로 인증번호 전송
+        // 앞선 depth에서 인증을 한다면 중복 확인도 먼저 해주는게 좋지 않나?
+        String code = null; // = emailService.sendCode(email);
 
-        // redis에 <email, 인증번호> 저장
+        // redis에 <email, 유형, 인증코드> 저장
+        redisUtils.setKeyAndHashValue(EMAIL_PREFIX + email, "code", code, EMAIL_CODE_EXPIRE_TIME, TimeUnit.MINUTES);
+    }
+
+    // 이메일 인증번호 확인
+    public void verifyEmail(String email, String userCode) {
+
+        // redis에서 code 확인
+        String code = redisUtils.getHashValue(EMAIL_PREFIX + email, "code");
+
+        // 인증번호 확인
+        if(!code.equals(userCode)) {
+            throw new ApplicationException(ErrorCode.INVALID_EMAIL_CODE);
+        }
+
+        // 해당 code에 대해 <email, 유형, 인증여부> 저장
+        redisUtils.setKeyAndHashValue(EMAIL_PREFIX + email, "verify", "true", EMAIL_VALIDATATION_TIME, TimeUnit.DAYS);
     }
 
     /*
