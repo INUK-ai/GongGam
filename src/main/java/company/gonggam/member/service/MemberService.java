@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +33,7 @@ public class MemberService {
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_CODE_EXPIRE_TIME = 10L;
     private final long EMAIL_VALIDATATION_TIME = 7L;
+    private final String VALIDATED_EMAIL_STATUS = "TRUE";
 
     /*
         기본 회원 가입
@@ -47,6 +49,7 @@ public class MemberService {
         checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
+        checkValidEmail(requestDTO.email());
 
         // 회원 생성
         Member member = newMember(requestDTO);
@@ -69,6 +72,15 @@ public class MemberService {
         }
     }
 
+    private void checkValidEmail(String email) {
+
+        String result = redisUtils.getHashValue(email, "verify");
+
+        if (!Objects.equals(result, VALIDATED_EMAIL_STATUS)) {
+            throw new ApplicationException(ErrorCode.INVALID_EMAIL);
+        }
+    }
+
     // 이메일 인증번호 전송
     public void checkEmail(String email) {
 
@@ -77,7 +89,7 @@ public class MemberService {
         String code = null; // = emailService.sendCode(email);
 
         // redis에 <email, 유형, 인증코드> 저장
-        redisUtils.setKeyAndHashValue(EMAIL_PREFIX + email, "code", code, EMAIL_CODE_EXPIRE_TIME, TimeUnit.MINUTES);
+        redisUtils.setEmailKey(EMAIL_PREFIX + email, "code", code, EMAIL_CODE_EXPIRE_TIME, TimeUnit.MINUTES);
     }
 
     // 이메일 인증번호 확인
@@ -87,12 +99,12 @@ public class MemberService {
         String code = redisUtils.getHashValue(EMAIL_PREFIX + email, "code");
 
         // 인증번호 확인
-        if(!code.equals(userCode)) {
+        if(!Objects.equals(code, userCode)) {
             throw new ApplicationException(ErrorCode.INVALID_EMAIL_CODE);
         }
 
         // 해당 code에 대해 <email, 유형, 인증여부> 저장
-        redisUtils.setKeyAndHashValue(EMAIL_PREFIX + email, "verify", "true", EMAIL_VALIDATATION_TIME, TimeUnit.DAYS);
+        redisUtils.setEmailKey(EMAIL_PREFIX + email, "verify", VALIDATED_EMAIL_STATUS, EMAIL_VALIDATATION_TIME, TimeUnit.DAYS);
     }
 
     /*

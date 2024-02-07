@@ -26,7 +26,7 @@ public class RedisUtils {
         redisTemplate.delete(key);
     }
 
-    public void setKeyAndHashValue(String key, String hashKey, String value, long timeout, TimeUnit unit) {
+    public void setEmailKey(String key, String hashKey, String value, long timeout, TimeUnit unit) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         hashOperations.put(key, hashKey, value);
         redisTemplate.expire(key, timeout, unit);
