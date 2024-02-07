@@ -2,6 +2,7 @@ package company.gonggam.member.service;
 
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
+import company.gonggam._core.jwt.JWTTokenProvider;
 import company.gonggam._core.utils.RedisUtils;
 import company.gonggam.member.domain.AgeGroup;
 import company.gonggam.member.domain.Gender;
@@ -11,6 +12,10 @@ import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +33,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisUtils redisUtils;
+    private final JWTTokenProvider jwtTokenProvider;
 
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_CODE_EXPIRE_TIME = 10L;
@@ -116,8 +123,12 @@ public class MemberService {
 
 
         // 토큰 발급
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                = new UsernamePasswordAuthenticationToken(requestDTO.email(), requestDTO.password());
+        AuthenticationManager manager = authenticationManagerBuilder.getObject();
+        Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
-        return new MemberResponseDTO.authTokenDTO();
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     // 비밀번호 확인
@@ -148,7 +159,8 @@ public class MemberService {
 
         // 토큰 발급
 
-        return new MemberResponseDTO.authTokenDTO();
+        //return new MemberResponseDTO.authTokenDTO();
+        return null;
     }
 
     /*
@@ -167,7 +179,8 @@ public class MemberService {
 
         // 토큰 발급
 
-        return new MemberResponseDTO.authTokenDTO();
+        //return new MemberResponseDTO.authTokenDTO();
+        return null;
     }
 
     // 회원 생성
