@@ -1,5 +1,7 @@
 package company.gonggam.member.service;
 
+import company.gonggam._core.error.ApplicationException;
+import company.gonggam._core.error.ErrorCode;
 import company.gonggam.member.domain.AgeGroup;
 import company.gonggam.member.domain.Gender;
 import company.gonggam.member.domain.Member;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -29,12 +33,26 @@ public class MemberService {
     public void signUp(MemberRequestDTO.signUpDTO requestDTO) {
 
         // TODO: 예외 처리
+        // 이메일 중복
+        checkDuplicatedEmail(requestDTO.email());
+
+        // 비밀번호 확인
+        // 이메일 확인은 따로 API를 만들 것
+        // 이메일 확인은 이후 verified 여부를 redis에서 가져와 확인
 
         // 회원 생성
         Member member = newMember(requestDTO);
 
         // 회원 저장
         memberRepository.save(member);
+    }
+
+    private void checkDuplicatedEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+
+        if(member.isPresent()) {
+            throw new ApplicationException(ErrorCode.SAME_EMAIL);
+        }
     }
 
     /*
