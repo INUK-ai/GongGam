@@ -34,7 +34,7 @@ public class MemberController {
     @GetMapping("/check/email")
     public ResponseEntity<?> checkEmail(@Valid @RequestParam("email") String email) {
 
-        memberService.checkEmail(email);
+        memberService.checkEmailCode(email);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }

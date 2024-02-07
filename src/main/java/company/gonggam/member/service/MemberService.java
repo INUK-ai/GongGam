@@ -82,7 +82,7 @@ public class MemberService {
     }
 
     // 이메일 인증번호 전송
-    public void checkEmail(String email) {
+    public void checkEmailCode(String email) {
 
         // emailService로 인증번호 전송
         // 앞선 depth에서 인증을 한다면 중복 확인도 먼저 해주는게 좋지 않나?
@@ -113,10 +113,16 @@ public class MemberService {
     public MemberResponseDTO.authTokenDTO login(MemberRequestDTO.loginDTO requestDTO) {
 
         // 회원 확인
+        Member member = findMemberByEmail(requestDTO.email());
 
         // 토큰 발급
 
         return new MemberResponseDTO.authTokenDTO();
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_EMAIL));
     }
 
     /*
