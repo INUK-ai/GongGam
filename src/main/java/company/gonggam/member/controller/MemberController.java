@@ -6,10 +6,7 @@ import company.gonggam.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static company.gonggam.member.dto.MemberRequestDTO.*;
 
@@ -27,6 +24,17 @@ public class MemberController {
     public ResponseEntity<?> signUp(@Valid @RequestBody signUpDTO requestDTO) {
 
         memberService.signUp(requestDTO);
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
+
+    /*
+        이메일 인증번호 발송
+     */
+    @GetMapping("/check/email")
+    public ResponseEntity<?> checkEmail(@Valid @RequestParam("email") String email) {
+
+        memberService.checkEmail(email);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }

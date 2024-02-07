@@ -63,6 +63,14 @@ public class MemberService {
         }
     }
 
+    // 이메일 인증번호 전송
+    public void checkEmail(String email) {
+
+        // emailService로 인증번호 전송
+
+        // redis에 <email, 인증번호> 저장
+    }
+
     /*
         기본 로그인
      */
