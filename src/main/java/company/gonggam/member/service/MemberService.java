@@ -46,7 +46,7 @@ public class MemberService {
         checkDuplicatedEmail(requestDTO.email());
 
         // 비밀번호 확인
-        checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
+        checkValidPassword(passwordEncoder.encode(requestDTO.password()), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
         checkValidEmail(requestDTO.email());
@@ -63,12 +63,6 @@ public class MemberService {
 
         if(member.isPresent()) {
             throw new ApplicationException(ErrorCode.SAME_EMAIL);
-        }
-    }
-
-    private void checkValidPassword(String password, String confirmPassword) {
-        if(!password.equals(confirmPassword)) {
-            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
 
@@ -113,16 +107,29 @@ public class MemberService {
     public MemberResponseDTO.authTokenDTO login(MemberRequestDTO.loginDTO requestDTO) {
 
         // 회원 확인
+
+        // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email());
+
+        // 2. 비밀번호 확인
+        checkValidPassword(member.getPassword(), passwordEncoder.encode(requestDTO.password()));
+
 
         // 토큰 발급
 
         return new MemberResponseDTO.authTokenDTO();
     }
 
+    // 비밀번호 확인
+    private void checkValidPassword(String password, String confirmPassword) {
+        if(!passwordEncoder.matches(password, confirmPassword)) {
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+        }
+    }
+
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_EMAIL));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMAIL_NON_EXIST));
     }
 
     /*
