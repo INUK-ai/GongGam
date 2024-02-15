@@ -3,11 +3,10 @@ package company.gonggam.member.controller;
 import company.gonggam._core.utils.ApiUtils;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static company.gonggam.member.dto.MemberRequestDTO.*;
 
@@ -22,9 +21,20 @@ public class MemberController {
         기본 회원 가입
      */
     @PostMapping("/signUp")
-    public ResponseEntity<?> signUp(signUpDTO requestDTO) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody signUpDTO requestDTO) {
 
         memberService.signUp(requestDTO);
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
+
+    /*
+        이메일 인증번호 발송
+     */
+    @GetMapping("/check/email")
+    public ResponseEntity<?> checkEmail(@Valid @RequestParam("email") String email) {
+
+        memberService.checkEmailCode(email);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
@@ -33,7 +43,7 @@ public class MemberController {
         기본 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(loginDTO requestDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody loginDTO requestDTO) {
 
         MemberResponseDTO.authTokenDTO responseDTO = memberService.login(requestDTO);
 

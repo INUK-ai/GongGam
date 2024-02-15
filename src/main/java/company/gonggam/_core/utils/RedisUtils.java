@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -25,9 +26,10 @@ public class RedisUtils {
         redisTemplate.delete(key);
     }
 
-    public void saveKeyAndHashValue(String key, String hashKey, String value) {
+    public void setEmailKey(String key, String hashKey, String value, long timeout, TimeUnit unit) {
         HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         hashOperations.put(key, hashKey, value);
+        redisTemplate.expire(key, timeout, unit);
     }
 
     public String getHashValue(String key, String hashKey) {
