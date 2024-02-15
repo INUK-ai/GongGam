@@ -85,8 +85,11 @@ public class MemberService {
     // 이메일 인증번호 전송
     public void checkEmailCode(String email) {
 
-        // emailService로 인증번호 전송
         // 앞선 depth에서 인증을 한다면 중복 확인도 먼저 해주는게 좋지 않나?
+        // 이메일 인증 시 버튼 클릭을 한다고 치면 중복된 이메일 체크도 같이 해주는 것이 좋을 듯
+        checkDuplicatedEmail(email);
+
+        // emailService로 인증번호 전송
         String code = null; // = emailService.sendCode(email);
 
         // redis에 <email, 유형, 인증코드> 저장
