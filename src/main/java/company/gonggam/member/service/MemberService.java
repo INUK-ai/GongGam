@@ -39,7 +39,6 @@ public class MemberService {
     private final JWTTokenProvider jwtTokenProvider;
 
     private final String EMAIL_PREFIX = "email:";
-    private final long EMAIL_CODE_EXPIRE_TIME = 10L;
     private final long EMAIL_VALIDATATION_TIME = 7L;
     private final String VALIDATED_EMAIL_STATUS = "TRUE";
 
