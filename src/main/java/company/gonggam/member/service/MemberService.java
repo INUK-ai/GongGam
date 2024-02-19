@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class MemberService {
     
     private final MemberRepository memberRepository;
+    private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -90,11 +91,8 @@ public class MemberService {
         checkDuplicatedEmail(email);
 
         // emailService로 인증번호 전송
-        String code = null; // = emailService.sendCode(email);
-
-        // redis에 <email, 유형, 인증코드> 저장
-        redisUtils.setEmailKey(EMAIL_PREFIX + email, "code", code, EMAIL_CODE_EXPIRE_TIME, TimeUnit.MINUTES);
-    }
+        emailService.sendEmailCode(email);
+}
 
     // 이메일 인증번호 확인
     public void verifyEmail(String email, String userCode) {
