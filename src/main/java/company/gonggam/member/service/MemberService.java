@@ -40,7 +40,7 @@ public class MemberService {
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_CODE_EXPIRE_TIME = 10L;
     private final long EMAIL_VALIDATATION_TIME = 7L;
-    private final String VALIDATED_EMAIL_STATUS = "TRUE";
+    private final String VALIDATED_EMAIL_STATUS = "pass";
 
     /*
         기본 회원 가입
@@ -75,9 +75,12 @@ public class MemberService {
 
     private void checkValidEmail(String email) {
 
-        String result = redisUtils.getHashValue(email, "verify");
+        log.info(email);
 
-        if (!Objects.equals(result, VALIDATED_EMAIL_STATUS)) {
+        String result = redisUtils.getHashValue(EMAIL_PREFIX + email, "verify");
+
+        if (!VALIDATED_EMAIL_STATUS.equals(result)) {
+            log.info(result);
             throw new ApplicationException(ErrorCode.INVALID_EMAIL);
         }
     }
@@ -136,7 +139,10 @@ public class MemberService {
 
     // 비밀번호 확인
     private void checkValidPassword(String password, String confirmPassword) {
-        if(!Objects.equals(password, confirmPassword)) {
+
+        log.info(password + " " + confirmPassword);
+
+        if(!password.equals(confirmPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }

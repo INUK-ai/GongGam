@@ -10,7 +10,7 @@ public enum AgeGroup {
     SIXTY_ABOVE,
     UNKNOWN;
 
-    public static AgeGroup fromInt(int age) {
+    public static AgeGroup fromInt(Integer age) {
         if (age >= 0 && age <= 9) {
             return AgeGroup.ZERO_TO_NINE;
         } else if (age >= 10 && age <= 19) {
