@@ -49,48 +49,4 @@ public class MemberController {
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
-
-    /*
-        카카오 회원가입
-     */
-    @PostMapping("/kakao/signUp")
-    public ResponseEntity<?> kakaoSignUp(kakaoSignUpDTO requestDTO) {
-
-        memberService.kakaoSignUp(requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
-
-    /*
-        카카오 로그인
-     */
-    @PostMapping("/kakao/login")
-    public ResponseEntity<?> kakaoLogin(kakaoLoginDTO requestDTO) {
-
-        MemberResponseDTO.authTokenDTO responseDTO = memberService.kakaoLogin(requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
-    }
-
-    /*
-        네이버 회원가입
-     */
-    @PostMapping("/naver/signUp")
-    public ResponseEntity<?> naverSignUp(naverSignUpDTO requestDTO) {
-
-        memberService.naverSignUp(requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
-
-    /*
-        네이버 로그인
-     */
-    @PostMapping("/naver/login")
-    public ResponseEntity<?> naverLogin(naverLoginDTO requestDTO) {
-
-        MemberResponseDTO.authTokenDTO responseDTO = memberService.naverLogin(requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
-    }
 }

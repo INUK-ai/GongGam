@@ -144,46 +144,6 @@ public class MemberService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.EMAIL_NON_EXIST));
     }
 
-    /*
-        카카오 회원 가입
-     */
-    public void kakaoSignUp(MemberRequestDTO.kakaoSignUpDTO requestDTO) {
-
-    }
-
-    /*
-        카카오 로그인
-     */
-    public MemberResponseDTO.authTokenDTO kakaoLogin(MemberRequestDTO.kakaoLoginDTO requestDTO) {
-
-        // 회원 확인
-
-        // 토큰 발급
-
-        //return new MemberResponseDTO.authTokenDTO();
-        return null;
-    }
-
-    /*
-        네이버 회원 가입
-     */
-    public void naverSignUp(MemberRequestDTO.naverSignUpDTO requestDTO) {
-
-    }
-
-    /*
-        네이버 로그인
-     */
-    public MemberResponseDTO.authTokenDTO naverLogin(MemberRequestDTO.naverLoginDTO requestDTO) {
-
-        // 회원 확인
-
-        // 토큰 발급
-
-        //return new MemberResponseDTO.authTokenDTO();
-        return null;
-    }
-
     // 회원 생성
     private Member newMember(MemberRequestDTO.signUpDTO requestDTO) {
         return Member.builder()
