@@ -120,4 +120,30 @@ class MemberServiceTest {
         // then
         assertEquals(ErrorCode.INVALID_PASSWORD, exception.getErrorCode());
     }
+
+    @Test
+    @DisplayName("기본 회원 가입 실패 - 인증 되지 않은 이메일")
+    void signUp_notVerifiedEmail() {
+
+        // given
+        MemberRequestDTO.signUpDTO requestDTO = new MemberRequestDTO.signUpDTO(
+                "test",
+                "test@test.com",
+                "test1234",
+                "test1234",
+                "male",
+                12
+        );
+
+        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(redisUtils.getHashValue("email:test@test.com", "verify")).thenReturn(null);
+
+        // when
+        ApplicationException exception = assertThrows(
+                ApplicationException.class, () -> memberService.signUp(requestDTO)
+        );
+
+        // then
+        assertEquals(ErrorCode.INVALID_EMAIL, exception.getErrorCode());
+    }
 }
