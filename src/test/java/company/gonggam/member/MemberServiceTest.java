@@ -68,4 +68,29 @@ class MemberServiceTest {
         // then
         verify(memberRepository, times(1)).save(any(Member.class));
     }
+
+    @Test
+    @DisplayName("기본 회원 가입 실패 - 이메일 중복")
+    void signUp_duplicatedEmail() {
+
+        // given
+        MemberRequestDTO.signUpDTO requestDTO = new MemberRequestDTO.signUpDTO(
+                "test",
+                "test@test.com",
+                "test1234",
+                "test1234",
+                "male",
+                12
+        );
+
+        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(Member.builder().build()));
+
+        // when
+        ApplicationException exception = assertThrows(
+                ApplicationException.class, () -> memberService.signUp(requestDTO)
+        );
+
+        // then
+        assertEquals(ErrorCode.SAME_EMAIL, exception.getErrorCode());
+    }
 }
