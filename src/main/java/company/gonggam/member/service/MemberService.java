@@ -40,7 +40,7 @@ public class MemberService {
 
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_VALIDATATION_TIME = 7L;
-    private final String VALIDATED_EMAIL_STATUS = "TRUE";
+    private final String VALIDATED_EMAIL_STATUS = "true";
 
     /*
         기본 회원 가입
@@ -53,7 +53,7 @@ public class MemberService {
         checkDuplicatedEmail(requestDTO.email());
 
         // 비밀번호 확인
-        checkValidPassword(passwordEncoder.encode(requestDTO.password()), passwordEncoder.encode(requestDTO.confirmPassword()));
+        checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
         checkValidEmail(requestDTO.email());
@@ -75,9 +75,9 @@ public class MemberService {
 
     private void checkValidEmail(String email) {
 
-        String result = redisUtils.getHashValue(email, "verify");
+        String result = redisUtils.getHashValue(EMAIL_PREFIX + email, "verify");
 
-        if (!Objects.equals(result, VALIDATED_EMAIL_STATUS)) {
+        if (!VALIDATED_EMAIL_STATUS.equals(result)) {
             throw new ApplicationException(ErrorCode.INVALID_EMAIL);
         }
     }
@@ -119,7 +119,7 @@ public class MemberService {
         Member member = findMemberByEmail(requestDTO.email());
 
         // 2. 비밀번호 확인
-        checkValidPassword(member.getPassword(), passwordEncoder.encode(requestDTO.password()));
+        checkValidPassword(requestDTO.password(), passwordEncoder.encode(member.getPassword()));
 
 
         // 토큰 발급
@@ -133,7 +133,8 @@ public class MemberService {
 
     // 비밀번호 확인
     private void checkValidPassword(String password, String confirmPassword) {
-        if(!passwordEncoder.matches(password, confirmPassword)) {
+
+        if(!password.equals(confirmPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
