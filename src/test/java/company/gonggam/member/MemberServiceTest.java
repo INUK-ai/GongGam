@@ -93,4 +93,31 @@ class MemberServiceTest {
         // then
         assertEquals(ErrorCode.SAME_EMAIL, exception.getErrorCode());
     }
+
+    @Test
+    @DisplayName("기본 회원 가입 실패 - 유효하지 않은 비밀번호")
+    void signUp_invalidPassword() {
+
+        // 입력된 비밀번호와 확인 비밀번호가 일치하는지 확인
+
+        // given
+        MemberRequestDTO.signUpDTO requestDTO = new MemberRequestDTO.signUpDTO(
+                "test",
+                "test@test.com",
+                "test1234",
+                "test12341",
+                "male",
+                12
+        );
+
+        when(memberRepository.findByEmail("test@test.com")).thenReturn(Optional.empty());
+
+        // when
+        ApplicationException exception = assertThrows(
+                ApplicationException.class, () -> memberService.signUp(requestDTO)
+        );
+
+        // then
+        assertEquals(ErrorCode.INVALID_PASSWORD, exception.getErrorCode());
+    }
 }
