@@ -1,5 +1,7 @@
 package company.gonggam.member;
 
+import company.gonggam._core.error.ApplicationException;
+import company.gonggam._core.error.ErrorCode;
 import company.gonggam._core.utils.RedisUtils;
 import company.gonggam.member.domain.Member;
 import company.gonggam.member.dto.MemberRequestDTO;
@@ -12,13 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +38,6 @@ class MemberServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
     }
 
     @AfterEach
@@ -57,25 +58,14 @@ class MemberServiceTest {
                 12
         );
 
-        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(redisUtils.getHashValue(anyString(), anyString())).thenReturn("pass");
+        when(memberRepository.findByEmail("test@test.com")).thenReturn(Optional.empty());
+        when(redisUtils.getHashValue("email:test@test.com", "verify")).thenReturn("true");
+        when(passwordEncoder.encode("test1234")).thenReturn("encodedPassword");
 
         // when
         memberService.signUp(requestDTO);
 
         // then
         verify(memberRepository, times(1)).save(any(Member.class));
-    }
-
-    @Test
-    void checkEmailCode() {
-    }
-
-    @Test
-    void verifyEmail() {
-    }
-
-    @Test
-    void login() {
     }
 }
