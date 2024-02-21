@@ -43,6 +43,12 @@ spring:
 jwt:
   secret: 7ZmA656AIOuTneygkOyZlSDquLDsm5AgMeydvOywqALdlsKJL3234jklsdjfaKJDLnflkasdf
 
+kakao:
+  client:
+    id: 049ebf43b54fe431e060d0aa0a8e39af
+  redirect:
+    uri: http://localhost:8080/api/auth/kakao/login
+
 logging:
   level:
     '[company.gonggam]': DEBUG

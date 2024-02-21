@@ -4,6 +4,7 @@ import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class MemberSocialLoginService {
+
+    @Value("${kakao.client.id}")
+    private String KAKAO_CLIENT_ID;
+    @Value("${kakao.redirect.uri}")
+    private String KAKAO_REDIRECT_URI;
 
     /*
         카카오 로그인
