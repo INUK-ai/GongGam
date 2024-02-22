@@ -14,11 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberSocialLoginService {
 
-    @Value("${kakao.client.id}")
-    private String KAKAO_CLIENT_ID;
-    @Value("${kakao.redirect.uri}")
-    private String KAKAO_REDIRECT_URI;
-
     /*
         카카오 로그인
      */

@@ -6,10 +6,7 @@ import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberSocialLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,7 +18,7 @@ public class MemberSocialLoginController {
     /*
         카카오 로그인
      */
-    @PostMapping("/kakao/login")
+    @GetMapping("/kakao/login")
     public ResponseEntity<?> kakaoLogin(@RequestParam(name = "code") String code) {
 
         MemberResponseDTO.authTokenDTO responseDTO = memberSocialLoginService.kakaoLogin(code);
@@ -32,7 +29,7 @@ public class MemberSocialLoginController {
     /*
         네이버 로그인
      */
-    @PostMapping("/naver/login")
+    @GetMapping("/naver/login")
     public ResponseEntity<?> naverLogin(@RequestParam(name = "code") String code) {
 
         MemberResponseDTO.authTokenDTO responseDTO = memberSocialLoginService.naverLogin(code);
