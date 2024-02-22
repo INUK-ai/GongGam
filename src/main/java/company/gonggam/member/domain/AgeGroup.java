@@ -29,4 +29,8 @@ public enum AgeGroup {
             return AgeGroup.UNKNOWN;
         }
     }
+
+    public static AgeGroup fromString(String age_range) {
+        return AgeGroup.UNKNOWN;
+    }
 }

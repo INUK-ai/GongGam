@@ -2,14 +2,19 @@ package company.gonggam.member.service;
 
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
+import company.gonggam.member.domain.AgeGroup;
+import company.gonggam.member.domain.Gender;
+import company.gonggam.member.domain.Member;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.property.KakaoProperties;
+import company.gonggam.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,6 +26,11 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @Service
 public class MemberSocialLoginService {
+
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final KakaoProperties kakaoProperties;
@@ -35,6 +45,10 @@ public class MemberSocialLoginService {
 
         // 사용자 정보
         MemberResponseDTO.KakaoInfoDTO profile = getKakaoProfile(accessToken);
+
+        // 회원 확인
+        Member member = memberService.findMemberByEmail(profile.kakaoAccount().email())
+                .orElse(kakaoSignUp(profile));
 
         return new MemberResponseDTO.KakaoProfile(
                 profile.properties().nickname(),
@@ -86,6 +100,21 @@ public class MemberSocialLoginService {
         }
 
         return response.getBody();
+    }
+
+    private Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile) {
+
+        Member member = Member.builder()
+                .name(profile.properties().nickname())
+                .email(profile.kakaoAccount().email())
+                .password(passwordEncoder.encode("test1234"))
+                .gender(Gender.fromString(profile.kakaoAccount().gender()))
+                .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
+                .build();
+
+        memberRepository.save(member);
+
+        return member;
     }
 
     /*

@@ -18,7 +18,7 @@ public class MemberResponseDTO {
     }
 
     public record KakaoProfile(
-            String nickName,
+            String nickname,
             String email,
             String age_range,
             String gender
@@ -62,7 +62,7 @@ public class MemberResponseDTO {
         public record KakaoAccount(
                 @JsonProperty("profile_nickname_needs_agreement")
                 boolean profileNicknameNeedsAgreement,
-                String nickName,
+                String nickname,
                 @JsonProperty("email_needs_agreement")
                 boolean emailNeedsAgreement,
                 @JsonProperty("is_email_valid")

@@ -116,7 +116,9 @@ public class MemberService {
         // 회원 확인
 
         // 1. 이메일 확인
-        Member member = findMemberByEmail(requestDTO.email());
+        Member member = findMemberByEmail(requestDTO.email())
+                .orElseThrow(() -> new ApplicationException(ErrorCode.SAME_EMAIL));
+
 
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), passwordEncoder.encode(member.getPassword()));
@@ -139,13 +141,12 @@ public class MemberService {
         }
     }
 
-    private Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.EMAIL_NON_EXIST));
+    protected Optional<Member> findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
     }
 
     // 회원 생성
-    private Member newMember(MemberRequestDTO.signUpDTO requestDTO) {
+    protected Member newMember(MemberRequestDTO.signUpDTO requestDTO) {
         return Member.builder()
                 .name(requestDTO.name())
                 .email(requestDTO.email())
