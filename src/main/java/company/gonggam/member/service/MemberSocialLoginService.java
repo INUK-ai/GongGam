@@ -28,10 +28,23 @@ public class MemberSocialLoginService {
     /*
         카카오 로그인
      */
-    public MemberResponseDTO.authTokenDTO kakaoLogin(String code) {
+    public MemberResponseDTO.KakaoProfile kakaoLogin(String code) {
 
         // 토큰 발급
-        String accessToken;
+        String accessToken = generateAccessToken(code);
+
+        // 사용자 정보
+        MemberResponseDTO.KakaoInfoDTO profile = getKakaoProfile(accessToken);
+
+        return new MemberResponseDTO.KakaoProfile(
+                profile.properties().nickname(),
+                profile.kakaoAccount().email(),
+                profile.kakaoAccount().age_range(),
+                profile.kakaoAccount().gender()
+        );
+    }
+
+    private String generateAccessToken(String code) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -53,9 +66,26 @@ public class MemberSocialLoginService {
             throw new ApplicationException(ErrorCode.FAILED_GET_ACCESS_TOKEN);
         }
 
-        accessToken = response.getBody().accessToken();
+        return response.getBody().accessToken();
+    }
 
-        return null;
+    private MemberResponseDTO.KakaoInfoDTO getKakaoProfile(String accessToken) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBearerAuth(accessToken);
+
+        ResponseEntity<MemberResponseDTO.KakaoInfoDTO> response = restTemplate.postForEntity(
+                kakaoProperties.getUserInfoUri(),
+                new HttpEntity<>(headers),
+                MemberResponseDTO.KakaoInfoDTO.class
+        );
+
+        if(!response.getStatusCode().is2xxSuccessful()) {
+            throw new ApplicationException(ErrorCode.FAILED_GET_ACCESS_TOKEN);
+        }
+
+        return response.getBody();
     }
 
     /*

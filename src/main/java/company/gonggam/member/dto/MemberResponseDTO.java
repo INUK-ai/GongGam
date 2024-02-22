@@ -15,24 +15,31 @@ public class MemberResponseDTO {
             @JsonFormat(timezone = "Asia/Seoul")
             Date accessTokenValidTime
     ) {
+    }
 
+    public record KakaoProfile(
+            String nickName,
+            String email,
+            String age_range,
+            String gender
+    ){
     }
 
     // Kakao Token
     public record KakaoTokenDTO(
-            @JsonProperty("access_token")
-            String accessToken,
             @JsonProperty("token_type")
             String tokenType,
+            @JsonProperty("access_token")
+            String accessToken,
             @JsonProperty("refresh_token")
             String refreshToken,
             @JsonProperty("id_token")
             String idToken,
             @JsonProperty("expires_in")
             int expiresIn,
-            String scope,
             @JsonProperty("refresh_token_expires_in")
-            int refreshTokenExpiresIn
+            int refreshTokenExpiresIn,
+            String scope
     ) {
     }
 
@@ -67,7 +74,7 @@ public class MemberResponseDTO {
                 boolean ageRangeNeedsAgreement,
                 @JsonProperty("age_range")
                 String age_range,
-                @JsonProperty("age_range_needs_agreement")
+                @JsonProperty("gender_needs_agreement")
                 boolean genderNeedsAgreement,
                 String gender
         ) {
