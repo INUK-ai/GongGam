@@ -1,4 +1,4 @@
-package company.gonggam._core.property;
+package company.gonggam.member.property;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoProperties {
-
     private String tokenUri;
     private String userInfoUri;
     private String grantType;
