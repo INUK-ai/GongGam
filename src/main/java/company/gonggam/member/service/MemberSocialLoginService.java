@@ -10,6 +10,7 @@ import company.gonggam.member.property.KakaoProperties;
 import company.gonggam.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -102,12 +105,13 @@ public class MemberSocialLoginService {
         return response.getBody();
     }
 
+    // TODO: AgeGroup.fromString 완성
     private Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile) {
 
         Member member = Member.builder()
                 .name(profile.properties().nickname())
                 .email(profile.kakaoAccount().email())
-                .password(passwordEncoder.encode("test1234"))
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .gender(Gender.fromString(profile.kakaoAccount().gender()))
                 .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
                 .build();
