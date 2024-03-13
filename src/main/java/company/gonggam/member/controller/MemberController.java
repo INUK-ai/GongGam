@@ -20,7 +20,7 @@ public class MemberController {
     /*
         기본 회원 가입
      */
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid @RequestBody signUpDTO requestDTO) {
 
         memberService.signUp(requestDTO);

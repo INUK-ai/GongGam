@@ -53,7 +53,7 @@ public class MemberService {
         checkDuplicatedEmail(requestDTO.email());
 
         // 비밀번호 확인
-        checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
+        checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
         checkValidEmail(requestDTO.email());
@@ -119,10 +119,8 @@ public class MemberService {
         Member member = findMemberByEmail(requestDTO.email())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.SAME_EMAIL));
 
-
         // 2. 비밀번호 확인
-        checkValidPassword(requestDTO.password(), passwordEncoder.encode(member.getPassword()));
-
+        checkValidPassword(requestDTO.password(), member.getPassword());
 
         // 토큰 발급
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
@@ -134,9 +132,11 @@ public class MemberService {
     }
 
     // 비밀번호 확인
-    private void checkValidPassword(String password, String confirmPassword) {
+    private void checkValidPassword(String rawPassword, String encodedPassword) {
 
-        if(!password.equals(confirmPassword)) {
+        log.info(rawPassword + " " + encodedPassword);
+
+        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }

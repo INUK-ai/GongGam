@@ -5,12 +5,12 @@ import company.gonggam._core.error.ErrorCode;
 import company.gonggam.member.domain.AgeGroup;
 import company.gonggam.member.domain.Gender;
 import company.gonggam.member.domain.Member;
+import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.property.KakaoProperties;
 import company.gonggam.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -41,24 +41,25 @@ public class MemberSocialLoginService {
     /*
         카카오 로그인
      */
-    public MemberResponseDTO.KakaoProfile kakaoLogin(String code) {
+    public MemberResponseDTO.authTokenDTO kakaoLogin(String code) {
 
         // 토큰 발급
         String accessToken = generateAccessToken(code);
 
         // 사용자 정보
         MemberResponseDTO.KakaoInfoDTO profile = getKakaoProfile(accessToken);
+        String password = UUID.randomUUID().toString();
 
         // 회원 확인
         Member member = memberService.findMemberByEmail(profile.kakaoAccount().email())
-                .orElse(kakaoSignUp(profile));
+                .orElse(kakaoSignUp(profile, password));
 
-        return new MemberResponseDTO.KakaoProfile(
-                profile.properties().nickname(),
-                profile.kakaoAccount().email(),
-                profile.kakaoAccount().age_range(),
-                profile.kakaoAccount().gender()
+        MemberRequestDTO.loginDTO kakaoLoginDTO = new MemberRequestDTO.loginDTO(
+                member.getEmail(),
+                password
         );
+
+        return memberService.login(kakaoLoginDTO);
     }
 
     private String generateAccessToken(String code) {
@@ -99,19 +100,20 @@ public class MemberSocialLoginService {
         );
 
         if(!response.getStatusCode().is2xxSuccessful()) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_ACCESS_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_GET_KAKAO_PROFILE);
         }
 
         return response.getBody();
     }
 
     // TODO: AgeGroup.fromString 완성
-    private Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile) {
+    @Transactional
+    protected Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile, String password) {
 
         Member member = Member.builder()
                 .name(profile.properties().nickname())
                 .email(profile.kakaoAccount().email())
-                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .password(passwordEncoder.encode(password))
                 .gender(Gender.fromString(profile.kakaoAccount().gender()))
                 .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
                 .build();
