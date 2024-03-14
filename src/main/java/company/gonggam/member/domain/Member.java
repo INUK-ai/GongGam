@@ -25,11 +25,11 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Answer> answerList = new ArrayList<>();
 
-    @Column(length = 20, nullable = false, unique = true)
+    @Column(length = 20, nullable = false)
     private String name;
     @Column(length = 100, nullable = false, unique = true)
     private String email;
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(length = 100, nullable = false)
     private String password;
 
     @Column(nullable = false)
