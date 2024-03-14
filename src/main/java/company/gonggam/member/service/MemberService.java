@@ -115,7 +115,7 @@ public class MemberService {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.SAME_EMAIL));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
 
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
@@ -140,6 +140,8 @@ public class MemberService {
     }
 
     protected Optional<Member> findMemberByEmail(String email) {
+        log.info("회원 확인 : " + email);
+
         return memberRepository.findByEmail(email);
     }
 

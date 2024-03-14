@@ -20,8 +20,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
-
 @Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,6 +37,7 @@ public class MemberSocialLoginService {
     /*
         카카오 로그인
      */
+    @Transactional
     public MemberResponseDTO.authTokenDTO kakaoLogin(String code) {
 
         // 토큰 발급
@@ -46,15 +45,14 @@ public class MemberSocialLoginService {
 
         // 사용자 정보
         MemberResponseDTO.KakaoInfoDTO profile = getKakaoProfile(accessToken);
-        String password = UUID.randomUUID().toString();
 
+        // TODO: 비밀번호 없이 Token 발급
         // 회원 확인
         Member member = memberService.findMemberByEmail(profile.kakaoAccount().email())
-                .orElse(kakaoSignUp(profile, password));
+                .orElseGet(() -> kakaoSignUp(profile));
 
         MemberRequestDTO.loginDTO kakaoLoginDTO = new MemberRequestDTO.loginDTO(
-                member.getEmail(),
-                password
+                member.getEmail(), ""
         );
 
         return memberService.login(kakaoLoginDTO);
@@ -105,13 +103,13 @@ public class MemberSocialLoginService {
     }
 
     // TODO: AgeGroup.fromString 완성
-    @Transactional
-    protected Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile, String password) {
+    protected Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile) {
+        log.info("카카오 회원 생성 : " + profile.kakaoAccount().email());
 
         Member member = Member.builder()
                 .name(profile.properties().nickname())
                 .email(profile.kakaoAccount().email())
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(""))
                 .gender(Gender.fromString(profile.kakaoAccount().gender()))
                 .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
                 .socialType(SocialType.KAKAO)

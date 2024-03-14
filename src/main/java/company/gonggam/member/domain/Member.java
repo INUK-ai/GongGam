@@ -29,7 +29,7 @@ public class Member extends BaseTimeEntity {
     private String name;
     @Column(length = 100, nullable = false, unique = true)
     private String email;
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String password;
 
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class Member extends BaseTimeEntity {
     private AgeGroup ageGroup;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("NONE")
+    @ColumnDefault("'NONE'")
     private SocialType socialType;
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'USER'")
