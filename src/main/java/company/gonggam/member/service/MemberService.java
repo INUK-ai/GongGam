@@ -4,10 +4,7 @@ import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
 import company.gonggam._core.jwt.JWTTokenProvider;
 import company.gonggam._core.utils.RedisUtils;
-import company.gonggam.member.domain.AgeGroup;
-import company.gonggam.member.domain.Authority;
-import company.gonggam.member.domain.Gender;
-import company.gonggam.member.domain.Member;
+import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
@@ -154,6 +151,7 @@ public class MemberService {
                 .password(passwordEncoder.encode(requestDTO.password()))
                 .gender(Gender.fromString(requestDTO.gender()))
                 .ageGroup(AgeGroup.fromInt(requestDTO.age()))
+                .socialType(SocialType.NONE)
                 .authority(Authority.USER)
                 .build();
     }

@@ -2,10 +2,7 @@ package company.gonggam.member.service;
 
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
-import company.gonggam.member.domain.AgeGroup;
-import company.gonggam.member.domain.Authority;
-import company.gonggam.member.domain.Gender;
-import company.gonggam.member.domain.Member;
+import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.property.KakaoProperties;
@@ -117,6 +114,7 @@ public class MemberSocialLoginService {
                 .password(passwordEncoder.encode(password))
                 .gender(Gender.fromString(profile.kakaoAccount().gender()))
                 .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
+                .socialType(SocialType.KAKAO)
                 .authority(Authority.USER)
                 .build();
 
