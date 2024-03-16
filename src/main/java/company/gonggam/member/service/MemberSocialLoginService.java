@@ -102,7 +102,6 @@ public class MemberSocialLoginService {
         return response.getBody();
     }
 
-    // TODO: AgeGroup.fromString 완성
     protected Member kakaoSignUp(MemberResponseDTO.KakaoInfoDTO profile) {
         log.info("카카오 회원 생성 : " + profile.kakaoAccount().email());
 
