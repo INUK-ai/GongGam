@@ -100,7 +100,7 @@ public class JWTTokenProvider {
                         .collect(Collectors.toList());
 
         // UserDetails 객체를 Principal, Crendential, Authorities와 함께 생성
-        // 이후 Authentication 객체를 반한한다.
+        // 이후 Authentication 객체를 반환
         // 이때 유저는 Spring boot 자체 User class
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 

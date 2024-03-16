@@ -120,13 +120,7 @@ public class MemberService {
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        // 토큰 발급
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(requestDTO.email(), requestDTO.password());
-        AuthenticationManager manager = authenticationManagerBuilder.getObject();
-        Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
-
-        return jwtTokenProvider.generateToken(authentication);
+        return getAuthTokenDTO(requestDTO.email(), requestDTO.password());
     }
 
     // 비밀번호 확인
@@ -152,9 +146,19 @@ public class MemberService {
                 .email(requestDTO.email())
                 .password(passwordEncoder.encode(requestDTO.password()))
                 .gender(Gender.fromString(requestDTO.gender()))
-                .ageGroup(AgeGroup.fromInt(requestDTO.age()))
+                .ageGroup(AgeGroup.fromString(requestDTO.age_range()))
                 .socialType(SocialType.NONE)
                 .authority(Authority.USER)
                 .build();
+    }
+
+    // 토큰 발급
+    protected MemberResponseDTO.authTokenDTO getAuthTokenDTO(String email, String password) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                = new UsernamePasswordAuthenticationToken(email, password);
+        AuthenticationManager manager = authenticationManagerBuilder.getObject();
+        Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
+
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

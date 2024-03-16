@@ -2,6 +2,8 @@ package company.gonggam.member.service;
 
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
+import company.gonggam._core.jwt.JWTTokenProvider;
+import company.gonggam._core.utils.RedisUtils;
 import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
@@ -13,12 +15,22 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
+import java.util.UUID;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -30,6 +42,9 @@ public class MemberSocialLoginService {
     private final MemberService memberService;
 
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisUtils redisUtils;
+    private final JWTTokenProvider jwtTokenProvider;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final KakaoProperties kakaoProperties;
@@ -37,6 +52,7 @@ public class MemberSocialLoginService {
     /*
         카카오 로그인
      */
+    // 카카오로부터 받은 최신 사용자 정보로 데이터베이스 내의 사용자 정보를 갱신할 필요가 있을까?
     @Transactional
     public MemberResponseDTO.authTokenDTO kakaoLogin(String code) {
 
@@ -46,16 +62,11 @@ public class MemberSocialLoginService {
         // 사용자 정보
         MemberResponseDTO.KakaoInfoDTO profile = getKakaoProfile(accessToken);
 
-        // TODO: 비밀번호 없이 Token 발급
         // 회원 확인
         Member member = memberService.findMemberByEmail(profile.kakaoAccount().email())
                 .orElseGet(() -> kakaoSignUp(profile));
 
-        MemberRequestDTO.loginDTO kakaoLoginDTO = new MemberRequestDTO.loginDTO(
-                member.getEmail(), ""
-        );
-
-        return memberService.login(kakaoLoginDTO);
+        return getSocialAuthTokenDTO(member);
     }
 
     private String generateAccessToken(String code) {
@@ -108,7 +119,7 @@ public class MemberSocialLoginService {
         Member member = Member.builder()
                 .name(profile.properties().nickname())
                 .email(profile.kakaoAccount().email())
-                .password(passwordEncoder.encode(""))
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .gender(Gender.fromString(profile.kakaoAccount().gender()))
                 .ageGroup(AgeGroup.fromString(profile.kakaoAccount().age_range()))
                 .socialType(SocialType.KAKAO)
@@ -131,5 +142,13 @@ public class MemberSocialLoginService {
 
         //return new MemberResponseDTO.authTokenDTO();
         return null;
+    }
+
+    private MemberResponseDTO.authTokenDTO getSocialAuthTokenDTO(Member member) {
+        UserDetails userDetails = new User(member.getEmail(), "",
+                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

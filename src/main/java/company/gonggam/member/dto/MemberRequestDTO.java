@@ -17,7 +17,7 @@ public class MemberRequestDTO {
             String password,
             String confirmPassword,
             String gender,
-            Integer age
+            String age_range
     ) {
     }
 
