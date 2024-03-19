@@ -2,47 +2,57 @@ package company.gonggam._core.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
 @Slf4j
-public class JWTTokenFilter extends OncePerRequestFilter {
+public class JWTTokenFilter extends GenericFilterBean {
 
     private final JWTTokenProvider jwtTokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 요청에서 authorization 부분을 가져옴
-        String jwtHeader = request.getHeader("Authorization");
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        // 해당 부분이 null 이거나 Bearer로 시작하지 않으면 리턴
-        if(jwtHeader == null || !jwtHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // Bearer을 지우고 암호화된 토큰만을 남김
-        String token = request.getHeader("Authorization").replace("Bearer ", "");
-
-        if(!jwtTokenProvider.validateToken(token)){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-
-        // 인증을 거친 뒤, 유저의 정보를 SecurityContextHolder에 저장
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.debug(authentication.getName() + "가 로그인 하였습니다.");
-
-        filterChain.doFilter(request, response);
+        String token;
     }
+
+
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//        // 요청에서 authorization 부분을 가져옴
+//        String jwtHeader = request.getHeader("Authorization");
+//
+//        // 해당 부분이 null 이거나 Bearer로 시작하지 않으면 리턴
+//        if(jwtHeader == null || !jwtHeader.startsWith("Bearer ")){
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        // Bearer을 지우고 암호화된 토큰만을 남김
+//        String token = request.getHeader("Authorization").replace("Bearer ", "");
+//
+//        if(!jwtTokenProvider.validateToken(token)){
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+//
+//        // 인증을 거친 뒤, 유저의 정보를 SecurityContextHolder에 저장
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        log.debug(authentication.getName() + "가 로그인 하였습니다.");
+//
+//        filterChain.doFilter(request, response);
+//    }
 }

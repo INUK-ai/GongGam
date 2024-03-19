@@ -12,8 +12,9 @@ public class MemberResponseDTO {
     public record authTokenDTO(
             String grantType,
             String accessToken,
-            @JsonFormat(timezone = "Asia/Seoul")
-            Date accessTokenValidTime
+            Long accessTokenValidTime,
+            String refreshToken,
+            Long refreshTokenValidTime
     ) {
     }
 
