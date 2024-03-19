@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
@@ -22,37 +21,21 @@ public class JWTTokenFilter extends GenericFilterBean {
     private final JWTTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-        String token;
+        // Request Header 에서 JWT Token 추출
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+
+        // 토큰 유효성 검사
+        if(token != null && jwtTokenProvider.validateToken(token)) {
+            if(!((HttpServletRequest) servletRequest).getRequestURI().equals("/api/auth/refresh")) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                log.info(authentication.getName() + " 님이 로그인 하였습니다.");
+            }
+        }
+
+        filterChain.doFilter(servletRequest, servletResponse);
     }
-
-
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        // 요청에서 authorization 부분을 가져옴
-//        String jwtHeader = request.getHeader("Authorization");
-//
-//        // 해당 부분이 null 이거나 Bearer로 시작하지 않으면 리턴
-//        if(jwtHeader == null || !jwtHeader.startsWith("Bearer ")){
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
-//        // Bearer을 지우고 암호화된 토큰만을 남김
-//        String token = request.getHeader("Authorization").replace("Bearer ", "");
-//
-//        if(!jwtTokenProvider.validateToken(token)){
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
-//        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-//
-//        // 인증을 거친 뒤, 유저의 정보를 SecurityContextHolder에 저장
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        log.debug(authentication.getName() + "가 로그인 하였습니다.");
-//
-//        filterChain.doFilter(request, response);
-//    }
 }
