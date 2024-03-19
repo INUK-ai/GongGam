@@ -8,6 +8,7 @@ import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -109,9 +110,7 @@ public class MemberService {
     /*
         기본 로그인
      */
-    public MemberResponseDTO.authTokenDTO login(MemberRequestDTO.loginDTO requestDTO) {
-
-        // 회원 확인
+    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, MemberRequestDTO.loginDTO requestDTO) {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
@@ -154,11 +153,39 @@ public class MemberService {
 
     // 토큰 발급
     protected MemberResponseDTO.authTokenDTO getAuthTokenDTO(String email, String password) {
+
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                 = new UsernamePasswordAuthenticationToken(email, password);
         AuthenticationManager manager = authenticationManagerBuilder.getObject();
         Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
         return jwtTokenProvider.generateToken(authentication);
+    }
+
+    // 토큰 재발급
+    public MemberResponseDTO.authTokenDTO reissueToken(HttpServletRequest httpServletRequest) {
+
+        // Request Header 에서 JWT Token 추출
+        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+
+        // 토큰 유효성 검사
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_TOKEN);
+        }
+
+        // type 확인
+        if(!jwtTokenProvider.isRefreshToken(token)) {
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
+        }
+
+        // RefreshToken
+
+        // 최초 로그인한 ip와 같은지 확인
+
+        // Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
+
+        // Redis 에 RefreshToken Update
+
+        return null;
     }
 }

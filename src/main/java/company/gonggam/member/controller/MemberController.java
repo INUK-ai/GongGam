@@ -3,6 +3,7 @@ package company.gonggam.member.controller;
 import company.gonggam._core.utils.ApiUtils;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +44,9 @@ public class MemberController {
         기본 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody loginDTO requestDTO) {
+    public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @Valid @RequestBody loginDTO requestDTO) {
 
-        MemberResponseDTO.authTokenDTO responseDTO = memberService.login(requestDTO);
+        MemberResponseDTO.authTokenDTO responseDTO = memberService.login(httpServletRequest, requestDTO);
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
@@ -53,4 +54,11 @@ public class MemberController {
     /*
         RefreshToken 발급
      */
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissueToken(HttpServletRequest httpServletRequest) {
+
+        MemberResponseDTO.authTokenDTO responseDTO = memberService.reissueToken(httpServletRequest);
+
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
+    }
 }

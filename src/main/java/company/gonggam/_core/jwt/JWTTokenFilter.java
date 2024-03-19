@@ -28,7 +28,7 @@ public class JWTTokenFilter extends GenericFilterBean {
 
         // 토큰 유효성 검사
         if(token != null && jwtTokenProvider.validateToken(token)) {
-            if(!((HttpServletRequest) servletRequest).getRequestURI().equals("/api/auth/refresh")) {
+            if(!((HttpServletRequest) servletRequest).getRequestURI().equals("/api/auth/reissue")) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
