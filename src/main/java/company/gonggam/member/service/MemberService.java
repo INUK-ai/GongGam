@@ -192,13 +192,27 @@ public class MemberService {
         }
 
         // RefreshToken
+        RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token);
+
+        if(refreshToken == null) {
+            throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
+        }
 
         // 최초 로그인한 ip와 같은지 확인
 
         // Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
+        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
+                refreshToken.getId(), refreshToken.getAuthorities()
+        );
 
         // Redis 에 RefreshToken Update
+        refreshTokenRedisRepository.save(RefreshToken.builder()
+                        .id(refreshToken.getId())
+                        .ip("")
+                        .authorities(refreshToken.getAuthorities())
+                        .refreshToken(authTokenDTO.refreshToken())
+                .build());
 
-        return null;
+        return authTokenDTO;
     }
 }

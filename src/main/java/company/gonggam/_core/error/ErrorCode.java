@@ -20,7 +20,10 @@ public enum ErrorCode {
     FAILED_VALIDATE_TOKEN(HttpStatus.EXPECTATION_FAILED, "TOKEN-001", "유효하지 않은 Token 입니다."),
     FAILED_GET_ACCESS_TOKEN(HttpStatus.EXPECTATION_FAILED, "TOKEN-002", "Access Token 을 가져오는데 실패했습니다."),
     IS_NOT_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN-003", "Refresh Token 이 아닙니다."),
-    FAILED_GET_KAKAO_PROFILE(HttpStatus.EXPECTATION_FAILED, "SOCIAL-001", "Kakao 유저 프로필을 가져오는데 실패했습니다.");
+    FAILED_GET_KAKAO_PROFILE(HttpStatus.EXPECTATION_FAILED, "SOCIAL-001", "Kakao 유저 프로필을 가져오는데 실패했습니다."),
+    FAILED_GET_RERFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN-004", "Refresh Token 을 얻을 수 없습니다."),
+    FAILED_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증에 실패하였습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "AUTH-002", "접근이 거부되었습니다.");
 
     /*
         예시)
