@@ -1,4 +1,4 @@
-package company.gonggam._core.utils.redis;
+package company.gonggam.redis.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
