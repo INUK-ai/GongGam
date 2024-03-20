@@ -8,6 +8,7 @@ import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
+import company.gonggam.redis.repository.RefreshTokenRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class MemberService {
     
     private final MemberRepository memberRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
