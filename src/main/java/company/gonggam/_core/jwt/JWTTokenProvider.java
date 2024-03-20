@@ -33,11 +33,12 @@ public class JWTTokenProvider {
     private static final String TYPE_REFRESH = "refresh";
     private static final String CLAIM_TYPE = "type";
 
-    //jwt 토큰 암호화를 위한 키
+    // jwt 토큰 암호화를 위한 키
     private final Key secretKey;
-    //Access token의 시간 : 15분
+    // Access token의 시간 : 15분
     private static final long ACCESS_TOKEN_LIFETIME = 15 * 60 * 1000L;
-    private static final long REFRESH_TOKEN_LIFETIME = 7 * 24 * 60 * 60 * 1000L;
+    // Refresh token의 시간 : 3일
+    private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L;
 
     public JWTTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

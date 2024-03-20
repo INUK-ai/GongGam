@@ -5,6 +5,7 @@ import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +34,20 @@ public class MemberController {
         이메일 인증번호 발송
      */
     @GetMapping("/check/email")
-    public ResponseEntity<?> checkEmail(@Valid @RequestParam("email") String email) {
+    public ResponseEntity<?> checkEmail(@Email @RequestParam("email") String email) {
 
         memberService.checkEmailCode(email);
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
+
+    /*
+        이메일 인증번호 확인
+     */
+    @PostMapping("/cert/email")
+    public ResponseEntity<?> certifyEmail(@Valid @RequestBody certifyEmailDTO requestDTO) {
+
+        memberService.certifyEmail(requestDTO);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }

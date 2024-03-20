@@ -13,7 +13,7 @@ import java.util.Collection;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RedisHash(value = "refresh", timeToLive = 604800)
+@RedisHash(value = "refresh", timeToLive = 259200)
 public class RefreshToken {
 
     @Id

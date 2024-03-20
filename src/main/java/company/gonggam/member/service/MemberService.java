@@ -59,7 +59,7 @@ public class MemberService {
         checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
-        //checkValidEmail(requestDTO.email());
+        checkValidEmail(requestDTO.email());
 
         // 회원 생성
         Member member = newMember(requestDTO);
@@ -97,12 +97,18 @@ public class MemberService {
 }
 
     // 이메일 인증번호 확인
-    public void verifyEmail(String email, String userCode) {
+    public void certifyEmail(MemberRequestDTO.certifyEmailDTO requestDTO) {
+
+        String email = requestDTO.email();
+        String userCode = requestDTO.code();
 
         // redis에서 code 확인
         String code = redisUtils.getHashValue(EMAIL_PREFIX + email, "code");
 
+        log.info("해당 이메일의 인증 코드 : " + code);
+
         // 인증번호 확인
+        // code가 null일 경우 NullPointerException
         if(!Objects.equals(code, userCode)) {
             throw new ApplicationException(ErrorCode.INVALID_EMAIL_CODE);
         }
