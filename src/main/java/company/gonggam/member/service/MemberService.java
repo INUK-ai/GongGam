@@ -8,6 +8,7 @@ import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
+import company.gonggam.redis.domain.RefreshToken;
 import company.gonggam.redis.repository.RefreshTokenRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -121,7 +122,7 @@ public class MemberService {
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        return getAuthTokenDTO(requestDTO.email(), requestDTO.password());
+        return getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
     }
 
     // 비밀번호 확인
@@ -154,14 +155,24 @@ public class MemberService {
     }
 
     // 토큰 발급
-    protected MemberResponseDTO.authTokenDTO getAuthTokenDTO(String email, String password) {
+    protected MemberResponseDTO.authTokenDTO getAuthTokenDTO(String email, String password, HttpServletRequest httpServletRequest) {
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                 = new UsernamePasswordAuthenticationToken(email, password);
         AuthenticationManager manager = authenticationManagerBuilder.getObject();
         Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
-        return jwtTokenProvider.generateToken(authentication);
+        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(authentication);
+
+        refreshTokenRedisRepository.save(RefreshToken.builder()
+                .id(authentication.getName())
+                .ip("")
+                .authorities(authentication.getAuthorities())
+                .refreshToken(authTokenDTO.refreshToken())
+                .build()
+        );
+
+        return authTokenDTO;
     }
 
     // 토큰 재발급
