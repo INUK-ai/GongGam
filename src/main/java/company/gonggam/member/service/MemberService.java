@@ -3,6 +3,7 @@ package company.gonggam.member.service;
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
 import company.gonggam._core.jwt.JWTTokenProvider;
+import company.gonggam._core.utils.ClientUtils;
 import company.gonggam._core.utils.RedisUtils;
 import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
@@ -166,7 +167,7 @@ public class MemberService {
 
         refreshTokenRedisRepository.save(RefreshToken.builder()
                 .id(authentication.getName())
-                .ip("")
+                .ip(ClientUtils.getClientIp(httpServletRequest))
                 .authorities(authentication.getAuthorities())
                 .refreshToken(authTokenDTO.refreshToken())
                 .build()
@@ -199,6 +200,10 @@ public class MemberService {
         }
 
         // 최초 로그인한 ip와 같은지 확인
+        String currentIp = ClientUtils.getClientIp(httpServletRequest);
+        if(!currentIp.equals(refreshToken.getIp())) {
+            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
+        }
 
         // Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
         MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(

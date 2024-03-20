@@ -23,7 +23,8 @@ public enum ErrorCode {
     FAILED_GET_KAKAO_PROFILE(HttpStatus.EXPECTATION_FAILED, "SOCIAL-001", "Kakao 유저 프로필을 가져오는데 실패했습니다."),
     FAILED_GET_RERFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN-004", "Refresh Token 을 얻을 수 없습니다."),
     FAILED_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증에 실패하였습니다."),
-    ACCESS_DENIED(HttpStatus.FORBIDDEN, "AUTH-002", "접근이 거부되었습니다.");
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "AUTH-002", "접근이 거부되었습니다."),
+    DIFFERENT_IP_ADDRESS(HttpStatus.BAD_REQUEST, "AUTH-003", "기존 IP 주소와 다른 IP 주소에서의 요청입니다.");
 
     /*
         예시)

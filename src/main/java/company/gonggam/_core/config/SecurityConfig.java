@@ -40,8 +40,7 @@ public class SecurityConfig {
     private final JWTTokenProvider jwtTokenProvider;
 
     private static final String[] WHITE_LIST = {
-            "/api/auth/signup",
-            "/api/auth/login"
+            "/api/auth/**"
     };
 
     @Bean
