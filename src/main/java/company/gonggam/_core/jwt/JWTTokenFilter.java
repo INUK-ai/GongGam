@@ -25,6 +25,7 @@ public class JWTTokenFilter extends GenericFilterBean {
 
         // Request Header 에서 JWT Token 추출
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+        String requestURI = ((HttpServletRequest) servletRequest).getRequestURI();
 
         // 토큰 유효성 검사
         /*
@@ -36,7 +37,7 @@ public class JWTTokenFilter extends GenericFilterBean {
             => 토큰 재발급 요청 path인 경우 필터 패스
          */
         if(token != null && jwtTokenProvider.validateToken(token)) {
-            if(!((HttpServletRequest) servletRequest).getRequestURI().equals("/api/auth/reissue")) {
+            if(!requestURI.equals("/api/auth/reissue") && !requestURI.equals("/api/auth/logout")) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 

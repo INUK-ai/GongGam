@@ -7,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static company.gonggam.member.dto.MemberRequestDTO.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
@@ -64,7 +66,7 @@ public class MemberController {
     }
 
     /*
-        RefreshToken 발급
+        Access Token 재발급 - Refresh Token 필요
      */
     @PostMapping("/reissue")
     public ResponseEntity<?> reissueToken(HttpServletRequest httpServletRequest) {
@@ -72,5 +74,18 @@ public class MemberController {
         MemberResponseDTO.authTokenDTO responseDTO = memberService.reissueToken(httpServletRequest);
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
+    }
+
+    /*
+        로그아웃 - Refresh Token 필요
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest) {
+
+        log.info("로그아웃 시도");
+
+        memberService.logout(httpServletRequest);
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
     }
 }

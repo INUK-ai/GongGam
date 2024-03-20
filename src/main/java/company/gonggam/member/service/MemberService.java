@@ -59,13 +59,16 @@ public class MemberService {
         checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
-        checkValidEmail(requestDTO.email());
+        //checkValidEmail(requestDTO.email());
 
         // 회원 생성
         Member member = newMember(requestDTO);
 
         // 회원 저장
         memberRepository.save(member);
+
+        // Redis 값 삭제
+        redisUtils.deleteHashValue(EMAIL_PREFIX + requestDTO.email(), "verify");
     }
 
     private void checkDuplicatedEmail(String email) {
@@ -94,7 +97,7 @@ public class MemberService {
 
         // emailService로 인증번호 전송
         emailService.sendEmailCode(email);
-}
+    }
 
     // 이메일 인증번호 확인
     public void certifyEmail(MemberRequestDTO.certifyEmailDTO requestDTO) {
@@ -190,7 +193,7 @@ public class MemberService {
 
         // 토큰 유효성 검사
         if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
         }
 
         // type 확인
@@ -225,5 +228,22 @@ public class MemberService {
                 .build());
 
         return authTokenDTO;
+    }
+
+    /*
+        로그아웃
+     */
+    public void logout(HttpServletRequest httpServletRequest) {
+        
+        log.info("로그아웃 - Refresh Token 확인");
+
+        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
+        }
+
+        RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token);
+        refreshTokenRedisRepository.delete(refreshToken);
     }
 }
