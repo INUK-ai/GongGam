@@ -25,11 +25,11 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Answer> answerList = new ArrayList<>();
 
-    @Column(length = 20, nullable = false, unique = true)
+    @Column(length = 20, nullable = false)
     private String name;
     @Column(length = 100, nullable = false, unique = true)
     private String email;
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(length = 100, nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -37,18 +37,23 @@ public class Member extends BaseTimeEntity {
     private Gender gender;
     @Column(nullable = false)
     private AgeGroup ageGroup;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'NONE'")
+    private SocialType socialType;
     @Enumerated(value = EnumType.STRING)
     @ColumnDefault("'USER'")
     private Authority authority;
 
     @Builder
-    public Member(Long id, String name, String email, String password, Gender gender, AgeGroup ageGroup, Authority authority) {
+    public Member(Long id, String name, String email, String password, Gender gender, AgeGroup ageGroup, SocialType socialType, Authority authority) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.gender = gender;
         this.ageGroup = ageGroup;
+        this.socialType = socialType;
         this.authority = authority;
     }
 }

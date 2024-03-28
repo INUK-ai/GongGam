@@ -3,13 +3,15 @@ package company.gonggam.member.service;
 import company.gonggam._core.error.ApplicationException;
 import company.gonggam._core.error.ErrorCode;
 import company.gonggam._core.jwt.JWTTokenProvider;
+import company.gonggam._core.utils.ClientUtils;
 import company.gonggam._core.utils.RedisUtils;
-import company.gonggam.member.domain.AgeGroup;
-import company.gonggam.member.domain.Gender;
-import company.gonggam.member.domain.Member;
+import company.gonggam.member.domain.*;
 import company.gonggam.member.dto.MemberRequestDTO;
 import company.gonggam.member.dto.MemberResponseDTO;
 import company.gonggam.member.repository.MemberRepository;
+import company.gonggam.redis.domain.RefreshToken;
+import company.gonggam.redis.repository.RefreshTokenRedisRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class MemberService {
     
     private final MemberRepository memberRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
@@ -53,16 +56,19 @@ public class MemberService {
         checkDuplicatedEmail(requestDTO.email());
 
         // 비밀번호 확인
-        checkValidPassword(requestDTO.password(), requestDTO.confirmPassword());
+        checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
-        checkValidEmail(requestDTO.email());
+        //checkValidEmail(requestDTO.email());
 
         // 회원 생성
         Member member = newMember(requestDTO);
 
         // 회원 저장
         memberRepository.save(member);
+
+        // Redis 값 삭제
+        redisUtils.deleteHashValue(EMAIL_PREFIX + requestDTO.email(), "verify");
     }
 
     private void checkDuplicatedEmail(String email) {
@@ -91,15 +97,21 @@ public class MemberService {
 
         // emailService로 인증번호 전송
         emailService.sendEmailCode(email);
-}
+    }
 
     // 이메일 인증번호 확인
-    public void verifyEmail(String email, String userCode) {
+    public void certifyEmail(MemberRequestDTO.certifyEmailDTO requestDTO) {
+
+        String email = requestDTO.email();
+        String userCode = requestDTO.code();
 
         // redis에서 code 확인
         String code = redisUtils.getHashValue(EMAIL_PREFIX + email, "code");
 
+        log.info("해당 이메일의 인증 코드 : " + code);
+
         // 인증번호 확인
+        // code가 null일 경우 NullPointerException
         if(!Objects.equals(code, userCode)) {
             throw new ApplicationException(ErrorCode.INVALID_EMAIL_CODE);
         }
@@ -111,87 +123,127 @@ public class MemberService {
     /*
         기본 로그인
      */
-    public MemberResponseDTO.authTokenDTO login(MemberRequestDTO.loginDTO requestDTO) {
-
-        // 회원 확인
+    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, MemberRequestDTO.loginDTO requestDTO) {
 
         // 1. 이메일 확인
-        Member member = findMemberByEmail(requestDTO.email());
+        Member member = findMemberByEmail(requestDTO.email())
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
 
         // 2. 비밀번호 확인
-        checkValidPassword(requestDTO.password(), passwordEncoder.encode(member.getPassword()));
+        checkValidPassword(requestDTO.password(), member.getPassword());
 
-
-        // 토큰 발급
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(requestDTO.email(), requestDTO.password());
-        AuthenticationManager manager = authenticationManagerBuilder.getObject();
-        Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
-
-        return jwtTokenProvider.generateToken(authentication);
+        return getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
     }
 
     // 비밀번호 확인
-    private void checkValidPassword(String password, String confirmPassword) {
+    private void checkValidPassword(String rawPassword, String encodedPassword) {
 
-        if(!password.equals(confirmPassword)) {
+        log.info(rawPassword + " " + encodedPassword);
+
+        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
 
-    private Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.EMAIL_NON_EXIST));
-    }
+    protected Optional<Member> findMemberByEmail(String email) {
+        log.info("회원 확인 : " + email);
 
-    /*
-        카카오 회원 가입
-     */
-    public void kakaoSignUp(MemberRequestDTO.kakaoSignUpDTO requestDTO) {
-
-    }
-
-    /*
-        카카오 로그인
-     */
-    public MemberResponseDTO.authTokenDTO kakaoLogin(MemberRequestDTO.kakaoLoginDTO requestDTO) {
-
-        // 회원 확인
-
-        // 토큰 발급
-
-        //return new MemberResponseDTO.authTokenDTO();
-        return null;
-    }
-
-    /*
-        네이버 회원 가입
-     */
-    public void naverSignUp(MemberRequestDTO.naverSignUpDTO requestDTO) {
-
-    }
-
-    /*
-        네이버 로그인
-     */
-    public MemberResponseDTO.authTokenDTO naverLogin(MemberRequestDTO.naverLoginDTO requestDTO) {
-
-        // 회원 확인
-
-        // 토큰 발급
-
-        //return new MemberResponseDTO.authTokenDTO();
-        return null;
+        return memberRepository.findByEmail(email);
     }
 
     // 회원 생성
-    private Member newMember(MemberRequestDTO.signUpDTO requestDTO) {
+    protected Member newMember(MemberRequestDTO.signUpDTO requestDTO) {
         return Member.builder()
                 .name(requestDTO.name())
                 .email(requestDTO.email())
                 .password(passwordEncoder.encode(requestDTO.password()))
                 .gender(Gender.fromString(requestDTO.gender()))
-                .ageGroup(AgeGroup.fromInt(requestDTO.age()))
+                .ageGroup(AgeGroup.fromString(requestDTO.age_range()))
+                .socialType(SocialType.NONE)
+                .authority(Authority.USER)
                 .build();
+    }
+
+    // 토큰 발급
+    protected MemberResponseDTO.authTokenDTO getAuthTokenDTO(String email, String password, HttpServletRequest httpServletRequest) {
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                = new UsernamePasswordAuthenticationToken(email, password);
+        AuthenticationManager manager = authenticationManagerBuilder.getObject();
+        Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
+
+        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(authentication);
+
+        refreshTokenRedisRepository.save(RefreshToken.builder()
+                .id(authentication.getName())
+                .ip(ClientUtils.getClientIp(httpServletRequest))
+                .authorities(authentication.getAuthorities())
+                .refreshToken(authTokenDTO.refreshToken())
+                .build()
+        );
+
+        return authTokenDTO;
+    }
+
+    // 토큰 재발급
+    public MemberResponseDTO.authTokenDTO reissueToken(HttpServletRequest httpServletRequest) {
+
+        // Request Header 에서 JWT Token 추출
+        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+
+        // 토큰 유효성 검사
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
+        }
+
+        // type 확인
+        if(!jwtTokenProvider.isRefreshToken(token)) {
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
+        }
+
+        // RefreshToken
+        RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token);
+
+        if(refreshToken == null) {
+            throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
+        }
+
+        // 최초 로그인한 ip와 같은지 확인
+        String currentIp = ClientUtils.getClientIp(httpServletRequest);
+        if(!currentIp.equals(refreshToken.getIp())) {
+            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
+        }
+
+        // Redis 에 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
+        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
+                refreshToken.getId(), refreshToken.getAuthorities()
+        );
+
+        // Redis 에 RefreshToken Update
+        refreshTokenRedisRepository.save(RefreshToken.builder()
+                        .id(refreshToken.getId())
+                        .ip("")
+                        .authorities(refreshToken.getAuthorities())
+                        .refreshToken(authTokenDTO.refreshToken())
+                .build());
+
+        return authTokenDTO;
+    }
+
+    /*
+        로그아웃
+     */
+    public void logout(HttpServletRequest httpServletRequest) {
+        
+        log.info("로그아웃 - Refresh Token 확인");
+
+        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
+        }
+
+        RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token);
+        refreshTokenRedisRepository.delete(refreshToken);
     }
 }

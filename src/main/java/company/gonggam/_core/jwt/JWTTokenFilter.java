@@ -2,47 +2,49 @@ package company.gonggam._core.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
 @Slf4j
-public class JWTTokenFilter extends OncePerRequestFilter {
+public class JWTTokenFilter extends GenericFilterBean {
 
     private final JWTTokenProvider jwtTokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 요청에서 authorization 부분을 가져옴
-        String jwtHeader = request.getHeader("Authorization");
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-        // 해당 부분이 null 이거나 Bearer로 시작하지 않으면 리턴
-        if(jwtHeader == null || !jwtHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response);
-            return;
+        // Request Header 에서 JWT Token 추출
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+        String requestURI = ((HttpServletRequest) servletRequest).getRequestURI();
+
+        // 토큰 유효성 검사
+        /*
+            토큰 재발급 요청 시 
+            refresh token을 요청 headers에 Authorization 키로 받으면 
+            token이 존재하기 때문에 
+            getAuthentication 메소드가 동작
+            -> 내부적으로 권한에 대한 정보가 없기 때문에 Exception 발생
+            => 토큰 재발급 요청 path인 경우 필터 패스
+         */
+        if(token != null && jwtTokenProvider.validateToken(token)) {
+            if(!requestURI.equals("/api/auth/reissue") && !requestURI.equals("/api/auth/logout")) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                log.info(authentication.getName() + " 님이 로그인 하였습니다.");
+            }
         }
 
-        // Bearer을 지우고 암호화된 토큰만을 남김
-        String token = request.getHeader("Authorization").replace("Bearer ", "");
-
-        if(!jwtTokenProvider.validateToken(token)){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-
-        // 인증을 거친 뒤, 유저의 정보를 SecurityContextHolder에 저장
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.debug(authentication.getName() + "가 로그인 하였습니다.");
-
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
