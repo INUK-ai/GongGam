@@ -1,12 +1,12 @@
 package company.gonggam.mascot.controller;
 
 import company.gonggam._core.utils.ApiUtils;
+import company.gonggam.mascot.dto.MascotRequestDTO;
 import company.gonggam.mascot.service.MascotService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static company.gonggam.mascot.dto.MascotResponseDTO.getMascotDTO;
 
@@ -16,6 +16,19 @@ import static company.gonggam.mascot.dto.MascotResponseDTO.getMascotDTO;
 public class MascotController {
 
     private final MascotService mascotService;
+
+    /*
+        마스코트 유형 검사
+     */
+
+    /*
+        마스코트 생성
+     */
+    @PostMapping("/mascot")
+    public ResponseEntity<?> initMascot(@Valid @RequestBody MascotRequestDTO.initMascotDTO requestDTO) {
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
 
     /*
         메인 페이지
