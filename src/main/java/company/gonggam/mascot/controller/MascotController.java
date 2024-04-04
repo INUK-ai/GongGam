@@ -20,6 +20,11 @@ public class MascotController {
     /*
         마스코트 유형 검사
      */
+    @GetMapping("/mascot/type")
+    public ResponseEntity<?> getMascotType() {
+
+        return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
 
     /*
         마스코트 생성

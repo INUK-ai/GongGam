@@ -17,6 +17,11 @@ public class MascotService {
     private final MascotRepository mascotRepository;
 
     /*
+        마스코트 유형 검사
+     */
+
+
+    /*
         마스코트 생성
      */
 
