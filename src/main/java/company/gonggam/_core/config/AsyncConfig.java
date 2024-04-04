@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableAsync
@@ -25,6 +26,9 @@ public class AsyncConfig extends AsyncConfigurerSupport {
         executor.setQueueCapacity(50);
         // 생성되는 Thread 접두사 지정
         executor.setThreadNamePrefix("GONGGAM-ASYNC-");
+        // 작업 Queue와 모든 Thread가 활성 상태일 때 추가적인 작업 요청 시,
+        // 해당 작업을 시도한 Thread(Client Thread)에서 직접 해당 작업 실행
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
 
         return executor;
