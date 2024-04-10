@@ -32,6 +32,10 @@ public class Mascot extends BaseTimeEntity {
     @Column
     private int level;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MascotType mascotType;
+
     @Builder
     public Mascot(Member member, String name) {
         this.member = member;
