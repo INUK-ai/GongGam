@@ -26,7 +26,6 @@ public class Question extends BaseTimeEntity {
 
     @Column(columnDefinition="TEXT")
     private String content;
-
     @Column
     private int level;
 

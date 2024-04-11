@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +28,12 @@ public class EmailService {
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_CODE_EXPIRE_TIME = 10L;
 
+    @Async
     public void sendEmailCode(String email) {
 
         String emailCode = generateEmailCode();
 
-      // redis에 <email, 유형, 인증코드> 저장
+        // redis에 <email, 유형, 인증코드> 저장
         redisUtils.setEmailKey(EMAIL_PREFIX + email, "code", emailCode, EMAIL_CODE_EXPIRE_TIME, TimeUnit.MINUTES);
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -39,7 +41,11 @@ public class EmailService {
         simpleMailMessage.setSubject("*** 인증 번호 메일입니다.");
         simpleMailMessage.setText("인증 번호는 \n" + emailCode + "\n 입니다.");
 
+        log.info("sendEmailCode started in thread: {}", Thread.currentThread().getName());
+
         javaMailSender.send(simpleMailMessage);
+
+        log.info("sendEmailCode completed in thread: {}", Thread.currentThread().getName());
     }
 
     public String generateEmailCode() {

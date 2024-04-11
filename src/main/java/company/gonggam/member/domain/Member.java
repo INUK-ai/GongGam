@@ -2,6 +2,7 @@ package company.gonggam.member.domain;
 
 import company.gonggam.BaseTimeEntity;
 import company.gonggam.answer.domain.Answer;
+import company.gonggam.mascot.domain.MemberMascot;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @OneToMany(mappedBy = "member")
-    private List<Answer> answerList = new ArrayList<>();
+    private List<MemberMascot> memberMascotList = new ArrayList<>();
 
     @Column(length = 20, nullable = false)
     private String name;

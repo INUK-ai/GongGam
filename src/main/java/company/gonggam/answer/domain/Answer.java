@@ -1,6 +1,7 @@
 package company.gonggam.answer.domain;
 
 import company.gonggam.BaseTimeEntity;
+import company.gonggam.mascot.domain.MemberMascot;
 import company.gonggam.member.domain.Member;
 import company.gonggam.question.domain.Question;
 import jakarta.persistence.*;
@@ -24,8 +25,8 @@ public class Answer extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "member_mascot_id")
+    private MemberMascot memberMascot;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
@@ -38,8 +39,8 @@ public class Answer extends BaseTimeEntity {
     private boolean disclosure;
 
     @Builder
-    public Answer(Member member, Question question, String content, boolean disclosure) {
-        this.member = member;
+    public Answer(MemberMascot memberMascot, Question question, String content, boolean disclosure) {
+        this.memberMascot = memberMascot;
         this.question = question;
         this.content = content;
         this.disclosure = disclosure;
