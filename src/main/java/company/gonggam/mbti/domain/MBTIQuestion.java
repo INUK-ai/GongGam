@@ -1,4 +1,4 @@
-package company.gonggam.mascot.domain;
+package company.gonggam.mbti.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "type_question_tb")
-public class TypeQuestion {
+@Table(name = "mbti_question_tb")
+public class MBTIQuestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
