@@ -1,6 +1,7 @@
 package company.gonggam.answer.domain;
 
 import company.gonggam.BaseTimeEntity;
+import company.gonggam.mascot.domain.MemberMascot;
 import company.gonggam.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,8 +20,8 @@ public class AnswerComment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "member_mascot_id")
+    private MemberMascot memberMascot;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
     private Answer answer;
@@ -29,8 +30,8 @@ public class AnswerComment extends BaseTimeEntity {
     private String comment;
 
     @Builder
-    public AnswerComment(Member member, Answer answer, String comment) {
-        this.member = member;
+    public AnswerComment(MemberMascot memberMascot, Answer answer, String comment) {
+        this.memberMascot = memberMascot;
         this.answer = answer;
         this.comment = comment;
     }
