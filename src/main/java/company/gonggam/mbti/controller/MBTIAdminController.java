@@ -22,11 +22,17 @@ public class MBTIAdminController {
     private final MBTIAdminService mbtiAdminService;
 
     /*
-        MBTI 질문 생성
+        MBTI 질문 개별 추가
      */
     @PostMapping("/question")
     public ResponseEntity<?> signUp(@Valid @RequestBody MBTIRequestDTO.saveMBTIQuestionDTO requestDTO) {
 
+        mbtiAdminService.saveMBTIQuestion(requestDTO);
+        
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
+
+    /*
+        MBTI 질문 리스트 수정
+     */
 }
