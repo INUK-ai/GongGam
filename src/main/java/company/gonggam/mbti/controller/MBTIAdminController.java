@@ -1,7 +1,7 @@
 package company.gonggam.mbti.controller;
 
 import company.gonggam._core.utils.ApiUtils;
-import company.gonggam.mbti.dto.MBTIAdminRequestDTO;
+import company.gonggam.mbti.dto.admin.MBTIAdminRequestDTO;
 import company.gonggam.mbti.service.MBTIAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class MBTIAdminController {
         MBTI 질문 개별 추가
      */
     @PostMapping("/question")
-    public ResponseEntity<?> signUp(@Valid @RequestBody MBTIAdminRequestDTO.saveMBTIQuestionDTO requestDTO) {
+    public ResponseEntity<?> saveMBTIQuestion(@Valid @RequestBody MBTIAdminRequestDTO.saveMBTIQuestionDTO requestDTO) {
 
         mbtiAdminService.saveMBTIQuestion(requestDTO);
         

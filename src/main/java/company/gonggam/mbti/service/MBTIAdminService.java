@@ -2,7 +2,7 @@ package company.gonggam.mbti.service;
 
 
 import company.gonggam.mbti.domain.MBTIQuestion;
-import company.gonggam.mbti.dto.MBTIAdminRequestDTO;
+import company.gonggam.mbti.dto.admin.MBTIAdminRequestDTO;
 import company.gonggam.mbti.repository.MBTIRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

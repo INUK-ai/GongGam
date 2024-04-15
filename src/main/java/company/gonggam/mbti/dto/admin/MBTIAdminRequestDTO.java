@@ -1,4 +1,4 @@
-package company.gonggam.mbti.dto;
+package company.gonggam.mbti.dto.admin;
 
 import jakarta.validation.constraints.NotBlank;
 
