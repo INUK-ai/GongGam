@@ -2,7 +2,7 @@ package company.gonggam.mbti.service;
 
 
 import company.gonggam.mbti.domain.MBTIQuestion;
-import company.gonggam.mbti.dto.MBTIRequestDTO;
+import company.gonggam.mbti.dto.MBTIAdminRequestDTO;
 import company.gonggam.mbti.repository.MBTIRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class MBTIAdminService {
 
     private final MBTIRepository mbtiRepository;
 
-    public void saveMBTIQuestion(MBTIRequestDTO.saveMBTIQuestionDTO requestDTO) {
+    public void saveMBTIQuestion(MBTIAdminRequestDTO.saveMBTIQuestionDTO requestDTO) {
 
         // MBTI 질문 생성
         MBTIQuestion mbtiQuestion = MBTIQuestion.builder()
