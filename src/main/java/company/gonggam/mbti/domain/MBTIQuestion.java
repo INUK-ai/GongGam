@@ -20,7 +20,6 @@ public class MBTIQuestion {
     private String type;
     @Column(nullable = false)
     private String question;
-    // bias * request.percent
     @Column(nullable = false)
     private int bias;
 
