@@ -16,11 +16,12 @@ public class MBTIResponseDTO {
         }
 
         public record MBTIQuestionDTO(
+            String type,
             String question,
             int bias
         ) {
             public MBTIQuestionDTO(MBTIQuestion mbtiQuestion) {
-                this(mbtiQuestion.getQuestion(), mbtiQuestion.getBias());
+                this(mbtiQuestion.getType(), mbtiQuestion.getQuestion(), mbtiQuestion.getBias());
             }
         }
     }

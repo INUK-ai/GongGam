@@ -1,6 +1,7 @@
 package company.gonggam.redis.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -14,16 +15,23 @@ import java.util.Map;
 public class MBTIInterimResult {
 
     @Id
-    private String id;
+    private Long id;
     private Map<String, Integer> scores; // 각 MBTI 유형의 점수를 저장할 맵
+    private Map<String, Integer> total_bias;
 
-    public MBTIInterimResult(String id, Map<String, Integer> scores) {
+    @Builder
+    public MBTIInterimResult(Long id, Map<String, Integer> scores, Map<String, Integer> counts) {
         this.id = id;
-        this.scores = scores;
+        this.scores = Map.copyOf(scores);
+        this.total_bias = Map.copyOf(counts);
     }
 
     // 각 유형의 점수를 업데이트하는 메소드
-    public void updateScore(String type, Integer score) {
-        this.scores.put(type, score);
+    public MBTIInterimResult updateScore(Map<String, Integer> newScores, Map<String, Integer> newCounts) {
+        return MBTIInterimResult.builder()
+                .id(this.id)
+                .scores(Map.copyOf(newScores))
+                .counts(Map.copyOf(newCounts))
+                .build();
     }
 }
