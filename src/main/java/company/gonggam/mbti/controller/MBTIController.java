@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static company.gonggam._core.utils.SecurityUtils.getCurrentMemberId;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -28,7 +30,7 @@ public class MBTIController {
 
         int page = 0;
 
-        MBTIResponseDTO.MBTIQuestionListDTO responseDTO = mbtiService.getMBTIQuestionList(page, size);
+        MBTIResponseDTO.MBTIQuestionListDTO responseDTO = mbtiService.getFirstMBTIQuestionList(page, size);
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
@@ -39,11 +41,22 @@ public class MBTIController {
      */
     @PostMapping("/question")
     public ResponseEntity<?> getMBTIQuestionList(
-            @Valid @RequestBody MBTIRequestDTO.MBTIInterimResultListDTO requestDTO,
+            @Valid @RequestBody MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        MBTIResponseDTO.MBTIQuestionListDTO responseDTO = mbtiService.getMBTIQuestionListAndSaveInterimResult(requestDTO, page, size);
+        MBTIResponseDTO.MBTIQuestionListDTO responseDTO = mbtiService.getMBTIQuestionListAndSaveInterimResult(requestDTO, page, size, getCurrentMemberId());
+
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
+    }
+
+    /*
+        결과 확인
+     */
+    @PostMapping("/result")
+    public ResponseEntity<?> getMBTIResult(@Valid @RequestBody MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO) {
+
+        MBTIResponseDTO.MBTIResultDTO responseDTO = mbtiService.getMBTIResult(requestDTO, getCurrentMemberId());
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
