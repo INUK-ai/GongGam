@@ -49,4 +49,15 @@ public class MBTIController {
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
+
+    /*
+        결과 확인
+     */
+    @PostMapping("/result")
+    public ResponseEntity<?> getMBTIResult(@Valid @RequestBody MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO) {
+
+        MBTIResponseDTO.MBTIResultDTO responseDTO = mbtiService.getMBTIResult(requestDTO, getCurrentMemberId());
+
+        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
+    }
 }

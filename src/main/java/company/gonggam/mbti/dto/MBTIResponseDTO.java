@@ -4,6 +4,7 @@ import company.gonggam.mbti.domain.MBTIQuestion;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MBTIResponseDTO {
@@ -24,5 +25,11 @@ public class MBTIResponseDTO {
                 this(mbtiQuestion.getType(), mbtiQuestion.getQuestion(), mbtiQuestion.getBias());
             }
         }
+    }
+
+    public record MBTIResultDTO(
+            String mbtiType,
+            Map<Character, Integer> mbtiResult
+    ) {
     }
 }

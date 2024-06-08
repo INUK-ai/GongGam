@@ -12,7 +12,7 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RedisHash(value = "mbti", timeToLive = 10800) // 60 * 60 * 3
-public class MBTIInterimResult {
+public class MBTIResult {
 
     @Id
     private Long id;
@@ -20,15 +20,15 @@ public class MBTIInterimResult {
     private Map<String, Integer> total_bias;
 
     @Builder
-    public MBTIInterimResult(Long id, Map<String, Integer> scores, Map<String, Integer> counts) {
+    public MBTIResult(Long id, Map<String, Integer> scores, Map<String, Integer> counts) {
         this.id = id;
         this.scores = Map.copyOf(scores);
         this.total_bias = Map.copyOf(counts);
     }
 
     // 각 유형의 점수를 업데이트하는 메소드
-    public MBTIInterimResult updateScore(Map<String, Integer> newScores, Map<String, Integer> newCounts) {
-        return MBTIInterimResult.builder()
+    public MBTIResult updateScore(Map<String, Integer> newScores, Map<String, Integer> newCounts) {
+        return MBTIResult.builder()
                 .id(this.id)
                 .scores(Map.copyOf(newScores))
                 .counts(Map.copyOf(newCounts))
