@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static company.gonggam._core.utils.SecurityUtils.getCurrentMemberId;
 import static company.gonggam.mascot.dto.MascotResponseDTO.getMascotDTO;
 
 @RequiredArgsConstructor
@@ -18,19 +19,12 @@ public class MascotController {
     private final MascotService mascotService;
 
     /*
-        마스코트 유형 검사
-     */
-    @GetMapping("/mascot/type")
-    public ResponseEntity<?> getMascotType() {
-
-        return ResponseEntity.ok().body(ApiUtils.success(null));
-    }
-
-    /*
         마스코트 생성
      */
     @PostMapping("/mascot")
     public ResponseEntity<?> initMascot(@Valid @RequestBody MascotRequestDTO.initMascotDTO requestDTO) {
+
+        mascotService.initMascot(requestDTO, getCurrentMemberId());
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }

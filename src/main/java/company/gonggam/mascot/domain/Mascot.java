@@ -23,16 +23,14 @@ public class Mascot extends BaseTimeEntity {
     @OneToMany(mappedBy = "mascot", cascade = CascadeType.REMOVE)
     private List<MemberMascot> memberMascotList = new ArrayList<>();
 
-    @Column(length = 20, nullable = false, unique = true)
-    private String name;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MascotType mascotType;
 
+    // 마스코트 이미지 추가
+
     @Builder
-    public Mascot(String name, MascotType mascotType) {
-        this.name = name;
+    public Mascot(MascotType mascotType) {
         this.mascotType = mascotType;
     }
 }
