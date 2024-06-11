@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MBTIResponseDTO {
 
@@ -13,7 +12,9 @@ public class MBTIResponseDTO {
             List<MBTIQuestionDTO> mbtiQuestionList
     ) {
         public MBTIQuestionListDTO(Page<MBTIQuestion> mbtiQuestions) {
-            this(mbtiQuestions.stream().map(MBTIQuestionDTO::new).collect(Collectors.toList()));
+            this(mbtiQuestions.stream()
+                    .map(MBTIQuestionDTO::new)
+                    .toList());
         }
 
         public record MBTIQuestionDTO(
