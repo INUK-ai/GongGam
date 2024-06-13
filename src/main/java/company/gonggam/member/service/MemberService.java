@@ -59,7 +59,7 @@ public class MemberService {
         checkValidPassword(requestDTO.password(), passwordEncoder.encode(requestDTO.confirmPassword()));
 
         // 이메일 인증 : 해당 email에 대한 인증여부 redis에서 확인
-        //checkValidEmail(requestDTO.email());
+        checkValidEmail(requestDTO.email());
 
         // 회원 생성
         Member member = newMember(requestDTO);
@@ -108,7 +108,7 @@ public class MemberService {
         // redis에서 code 확인
         String code = redisUtils.getHashValue(EMAIL_PREFIX + email, "code");
 
-        log.info("해당 이메일의 인증 코드 : " + code);
+        log.info("회원님이 입력한 인증 코드 : {} \t 해당 이메일의 인증 코드 : {}", userCode, code);
 
         // 인증번호 확인
         // code가 null일 경우 NullPointerException
@@ -138,7 +138,7 @@ public class MemberService {
     // 비밀번호 확인
     private void checkValidPassword(String rawPassword, String encodedPassword) {
 
-        log.info(rawPassword + " " + encodedPassword);
+        log.info("{} {}", rawPassword, encodedPassword);
 
         if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
@@ -146,7 +146,7 @@ public class MemberService {
     }
 
     protected Optional<Member> findMemberByEmail(String email) {
-        log.info("회원 확인 : " + email);
+        log.info("회원 확인 : {}", email);
 
         return memberRepository.findByEmail(email);
     }

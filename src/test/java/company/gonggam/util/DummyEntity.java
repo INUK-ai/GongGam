@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DummyEntity {
 
-    protected Member newMember(String name, String email, String gender, Integer ageGroup, Authority authority) {
+    protected Member newMember(String name, String email, String gender, String ageGroup, Authority authority) {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -21,16 +21,16 @@ public class DummyEntity {
                 .email(email)
                 .password(passwordEncoder.encode("test1234"))
                 .gender(Gender.fromString(gender))
-                .ageGroup(AgeGroup.fromInt(ageGroup))
+                .ageGroup(AgeGroup.fromString(ageGroup))
                 .authority(authority)
                 .build();
     }
 
     protected List<Member> memberDummyList() {
         return Arrays.asList(
-                newMember("test1", "test1@test.com", "",11, Authority.USER),
-                newMember("test2", "test2@test.com", "male",21, Authority.USER),
-                newMember("test3", "test3@test.com", "female",31, Authority.USER)
+                newMember("test1", "test1@test.com", "","10~14", Authority.USER),
+                newMember("test2", "test2@test.com", "male","20~29", Authority.USER),
+                newMember("test3", "test3@test.com", "female","90~", Authority.USER)
         );
     }
 }
