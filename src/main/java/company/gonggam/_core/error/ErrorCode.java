@@ -29,7 +29,8 @@ public enum ErrorCode {
     ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "AUTH-004", "익명의 유저가 접근하였습니다."),
     CANT_LOAD_MBTI_INTERIM_RESULT(HttpStatus.BAD_REQUEST, "MBTI-001", "중간 결과 없이 최종 결과를 가져올 수 없습니다."),
     FAILED_GET_MASCOT_BY_TYPE(HttpStatus.BAD_REQUEST, "MASCOT-001", "해당 MBTI Type 의 Mascot 를 가져올 수 없습니다."),
-    FAILED_GET_MEMBER_BY_ID(HttpStatus.BAD_REQUEST, "MEMBER-001", "해당 ID의 Member 를 조회할 수 없습니다.");
+    FAILED_GET_MEMBER_BY_ID(HttpStatus.BAD_REQUEST, "MEMBER-001", "해당 ID의 Member 를 조회할 수 없습니다."),
+    NOT_ALL_QUESTIONS_ANSWERED(HttpStatus.BAD_REQUEST, "MBTI-002", "질문에 대한 답변이 비어있습니다.");
 
     /*
         예시)
