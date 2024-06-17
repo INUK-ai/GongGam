@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static company.gonggam._core.utils.SecurityUtils.getCurrentMemberId;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/question")
@@ -21,10 +23,10 @@ public class QuestionController {
     /*
         일일 질문 확인
      */
-    @GetMapping("/daily/question")
+    @GetMapping("/daily")
     public ResponseEntity<?> getDailyQuestion() {
 
-        QuestionResponseDTO.getDailyQuestionDTO responseDTO = questionService.getDailyQuestion();
+        QuestionResponseDTO.getDailyQuestionDTO responseDTO = questionService.getDailyQuestion(getCurrentMemberId());
 
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
@@ -32,7 +34,7 @@ public class QuestionController {
     /*
         일일 질문 답변
      */
-    @PostMapping("/daily/question/answer")
+    @PostMapping("/daily/answer")
     public ResponseEntity<?> answerDailyQuestion(QuestionRequestDTO.answerDailyQuestionDTO requestDTO) {
 
         questionService.answerDailyQuestion(requestDTO);

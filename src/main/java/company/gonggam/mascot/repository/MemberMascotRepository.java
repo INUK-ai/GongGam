@@ -1,4 +1,4 @@
-package company.gonggam.mascot.repository.memberMascot;
+package company.gonggam.mascot.repository;
 
 import company.gonggam.mascot.domain.MemberMascot;
 import org.springframework.data.jpa.repository.JpaRepository;

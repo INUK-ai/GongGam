@@ -32,7 +32,7 @@ public class MascotResponseDTO {
                 MascotType mascotType
         ) {
             public MemberMascotDTO(MemberMascot memberMascot) {
-                this(memberMascot.getMascot().getMascotType());
+                this(memberMascot.getMascotType());
             }
         }
     }

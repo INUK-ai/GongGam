@@ -1,4 +1,4 @@
-package company.gonggam.mascot.repository.memberMascot;
+package company.gonggam.mascot.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
