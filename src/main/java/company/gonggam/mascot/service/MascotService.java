@@ -35,6 +35,7 @@ public class MascotService {
         MemberMascot memberMascot = createMemberMascot(requestDTO, member);
         memberMascotRepository.save(memberMascot);
 
+        member.setMainMascot(memberMascot);
         member.getMemberMascotList().add(memberMascot);
     }
 

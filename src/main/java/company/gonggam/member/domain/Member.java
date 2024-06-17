@@ -23,7 +23,7 @@ public class Member extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_mascot_id")
     private MemberMascot mainMascot;
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberMascot> memberMascotList = new ArrayList<>();
 
     @Column(length = 20, nullable = false)
@@ -56,5 +56,10 @@ public class Member extends BaseTimeEntity {
         this.ageGroup = ageGroup;
         this.socialType = socialType;
         this.authority = authority;
+    }
+
+    public void addMemberMascot(MemberMascot memberMascot) {
+        this.memberMascotList.add(memberMascot);
+        memberMascot.setMember(this);
     }
 }
