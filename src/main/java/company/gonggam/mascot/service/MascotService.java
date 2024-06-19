@@ -26,30 +26,24 @@ public class MascotService {
 
     /*
         Member Mascot 생성
+        - 검사 결과 이후 만드는 Mascot 이기 때문에 항상 Main Mascot 가 됨
      */
     @Transactional
     public void initMascot(MascotRequestDTO.initMascotDTO requestDTO, Long currentMemberId) {
 
         Member member = getMemberById(currentMemberId);
-
         MemberMascot memberMascot = createMemberMascot(requestDTO, member);
-        memberMascotRepository.save(memberMascot);
 
+        member.addMemberMascot(memberMascot);
         member.setMainMascot(memberMascot);
-        member.getMemberMascotList().add(memberMascot);
-    }
 
-    /*
-        TODO: MainMascot 설정
-     */
-    @Transactional
-    public void setMainMascot(Long currentMemberId, Long mainMascotId) {
-
+        memberMascotRepository.save(memberMascot);
     }
 
     /*
         메인 페이지
         - Member Mascot 반환
+        - TODO: Mascot Image
      */
     public MainMascotListDTO mainMascot(Long currentMemberId) {
 
@@ -65,13 +59,17 @@ public class MascotService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.FAILED_GET_MEMBER_BY_ID));
     }
 
-    // TODO: mascotImageUrl
     protected MemberMascot createMemberMascot(MascotRequestDTO.initMascotDTO requestDTO, Member member) {
         return MemberMascot.builder()
                 .member(member)
                 .mascotType(MascotType.valueOf(requestDTO.mbtiType()))
-                .mascotImageUrl("")
+                .mascotImageUrl(getMascotImageUrl(requestDTO.mbtiType()))
                 .name(requestDTO.mascotName())
                 .build();
+    }
+
+    // TODO: mascotImageUrl
+    protected String getMascotImageUrl(String mbtiType) {
+        return null;
     }
 }
