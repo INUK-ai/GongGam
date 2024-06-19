@@ -1,13 +1,9 @@
 package company.gonggam.member.domain;
 
 import company.gonggam.BaseTimeEntity;
-import company.gonggam.answer.domain.Answer;
 import company.gonggam.mascot.domain.MemberMascot;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
@@ -23,7 +19,11 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "member")
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_mascot_id")
+    private MemberMascot mainMascot;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberMascot> memberMascotList = new ArrayList<>();
 
     @Column(length = 20, nullable = false)
@@ -56,5 +56,10 @@ public class Member extends BaseTimeEntity {
         this.ageGroup = ageGroup;
         this.socialType = socialType;
         this.authority = authority;
+    }
+
+    public void addMemberMascot(MemberMascot memberMascot) {
+        this.memberMascotList.add(memberMascot);
+        memberMascot.setMember(this);
     }
 }

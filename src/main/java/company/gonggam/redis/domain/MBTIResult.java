@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -16,22 +17,13 @@ public class MBTIResult {
 
     @Id
     private Long id;
-    private Map<String, Integer> scores; // 각 MBTI 유형의 점수를 저장할 맵
-    private Map<String, Integer> total_bias;
+    private Map<String, Integer> scores = new HashMap<>(); // 각 MBTI 유형의 점수를 저장할 맵
+    private Map<String, Integer> total_bias = new HashMap<>();
 
     @Builder
-    public MBTIResult(Long id, Map<String, Integer> scores, Map<String, Integer> counts) {
+    public MBTIResult(Long id, Map<String, Integer> scores, Map<String, Integer> total_bias) {
         this.id = id;
         this.scores = Map.copyOf(scores);
-        this.total_bias = Map.copyOf(counts);
-    }
-
-    // 각 유형의 점수를 업데이트하는 메소드
-    public MBTIResult updateScore(Map<String, Integer> newScores, Map<String, Integer> newCounts) {
-        return MBTIResult.builder()
-                .id(this.id)
-                .scores(Map.copyOf(newScores))
-                .counts(Map.copyOf(newCounts))
-                .build();
+        this.total_bias = Map.copyOf(total_bias);
     }
 }

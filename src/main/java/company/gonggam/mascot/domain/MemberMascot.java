@@ -27,13 +27,17 @@ public class MemberMascot extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mascot_id")
-    private Mascot mascot;
+
     @OneToMany(mappedBy = "memberMascot", cascade = CascadeType.REMOVE)
     private List<MemberMascotQuestion> dailyQuestionList = new ArrayList<>();
     @OneToMany(mappedBy = "memberMascot")
     private List<Answer> answerList = new ArrayList<>();
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MascotType mascotType;
+    @Column
+    private String mascotImageUrl;
 
     @Column
     private String name;
@@ -44,11 +48,19 @@ public class MemberMascot extends BaseTimeEntity {
     private int questionIndex;
 
     @Builder
-    public MemberMascot(Member member, Mascot mascot, String name) {
+    public MemberMascot(Member member, MascotType mascotType, String mascotImageUrl, String name) {
         this.member = member;
-        this.mascot = mascot;
+        this.mascotType = mascotType;
+        this.mascotImageUrl = mascotImageUrl;
         this.name = name;
         this.level = 0;
         this.questionIndex = 0;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        if(!member.getMemberMascotList().contains(this)) {
+            member.getMemberMascotList().add(this);
+        }
     }
 }

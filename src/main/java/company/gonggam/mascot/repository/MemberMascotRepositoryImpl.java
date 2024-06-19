@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class MascotRepositoryImpl implements MascotRepositoryCustom {
+public class MemberMascotRepositoryImpl implements MemberMascotRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 }

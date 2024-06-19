@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MBTIInterimResultRedisRepository extends CrudRepository<MBTIResult, Long> {
 
-    Optional<MBTIResult> findbyInterimResultId(Long interimResultId);
+    Optional<MBTIResult> findById(Long id);
 }

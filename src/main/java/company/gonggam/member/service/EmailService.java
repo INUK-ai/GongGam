@@ -28,6 +28,7 @@ public class EmailService {
     private final String EMAIL_PREFIX = "email:";
     private final long EMAIL_CODE_EXPIRE_TIME = 10L;
 
+    // 만약 애초에 없는 이메일이라면 ?
     @Async
     public void sendEmailCode(String email) {
 

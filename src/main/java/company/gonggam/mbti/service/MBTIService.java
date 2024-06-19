@@ -37,7 +37,12 @@ public class MBTIService {
         Page<MBTIQuestion> mbtiQuestionPage = getMbtiQuestionPage(page, size);
 
         // 중간결과를 저장할 객체 생성 및 저장
-        MBTIResult.builder().build();
+        MBTIResult mbtiResult = MBTIResult.builder()
+                .scores(new HashMap<>())
+                .total_bias(new HashMap<>())
+                .build();
+
+        mbtiInterimResultRedisRepository.save(mbtiResult);
 
         return new MBTIResponseDTO.MBTIQuestionListDTO(mbtiQuestionPage);
     }
@@ -45,22 +50,23 @@ public class MBTIService {
     public MBTIResponseDTO.MBTIQuestionListDTO getMBTIQuestionListAndSaveInterimResult(MBTIRequestDTO.@Valid MBTIMemberAnswerListDTO requestDTO, int page, int size, Long currentMemberId) {
 
         // 중간 결과 불러오기
-        MBTIResult interimResult = mbtiInterimResultRedisRepository.findbyInterimResultId(currentMemberId)
+        MBTIResult interimResult = mbtiInterimResultRedisRepository.findById(currentMemberId)
                 .orElseGet(() -> {
-                    Map<String, Integer> initialScores = new HashMap<>();
-                    initialScores.put("IE", 0);
-                    initialScores.put("NS", 0);
-                    initialScores.put("FT", 0);
-                    initialScores.put("PJ", 0);
-
                     MBTIResult newInterimResult = MBTIResult.builder()
                             .id(currentMemberId)
-                            .scores(initialScores)
+                            .scores(new HashMap<>())
+                            .total_bias(new HashMap<>())
                             .build();
+
                     mbtiInterimResultRedisRepository.save(newInterimResult);
 
                     return newInterimResult;
                 });
+
+        // 모든 질문에 답변했는지 확인
+//        if(!checkAnsweredAllQuestions(requestDTO, size)) {
+//            throw new ApplicationException(ErrorCode.NOT_ALL_QUESTIONS_ANSWERED);
+//        }
 
         // 중간 결과 연산
         calculateMBTIScores(requestDTO, interimResult);
@@ -71,8 +77,15 @@ public class MBTIService {
         return new MBTIResponseDTO.MBTIQuestionListDTO(mbtiQuestionPage);
     }
 
+    private boolean checkAnsweredAllQuestions(MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO, int size) {
+        return requestDTO.mbtiMemberAnswerDTOList().size() == size;
+    }
+
     @Async
     protected void calculateMBTIScores(MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO, MBTIResult mbtiResult) {
+
+        Map<String, Integer> updateScores = new HashMap<>(mbtiResult.getScores());
+        Map<String, Integer> updateTotalBias = new HashMap<>(mbtiResult.getTotal_bias());
 
         // 추가 항목 합산
         requestDTO.mbtiMemberAnswerDTOList().forEach(mbtiMemberAnswerDTO -> {
@@ -80,9 +93,17 @@ public class MBTIService {
             int bias = mbtiMemberAnswerDTO.bias();
             int ratio = mbtiMemberAnswerDTO.ratio();
 
-            mbtiResult.getScores().put(type, mbtiResult.getScores().getOrDefault(type, 0) + bias * ratio);
-            mbtiResult.getTotal_bias().put(type, mbtiResult.getTotal_bias().getOrDefault(type, 0) + bias);
+            updateScores.put(type, updateScores.getOrDefault(type, 0) + bias * ratio);
+            updateTotalBias.put(type, updateTotalBias.getOrDefault(type, 0) + bias);
         });
+
+        MBTIResult updatedResult = MBTIResult.builder()
+                .id(mbtiResult.getId())
+                .scores(updateScores)
+                .total_bias(updateTotalBias)
+                .build();
+
+        mbtiInterimResultRedisRepository.save(updatedResult);
     }
 
     protected Page<MBTIQuestion> getMbtiQuestionPage(int page, int size) {
@@ -91,7 +112,7 @@ public class MBTIService {
 
     public MBTIResponseDTO.MBTIResultDTO getMBTIResult(MBTIRequestDTO.MBTIMemberAnswerListDTO requestDTO, Long currentMemberId) {
 
-        MBTIResult mbtiResult = mbtiInterimResultRedisRepository.findbyInterimResultId(currentMemberId)
+        MBTIResult mbtiResult = mbtiInterimResultRedisRepository.findById(currentMemberId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.CANT_LOAD_MBTI_INTERIM_RESULT));
 
         calculateMBTIScores(requestDTO, mbtiResult);
@@ -99,6 +120,7 @@ public class MBTIService {
         return getMBTIType(mbtiResult);
     }
 
+    // TODO: 계산 로직 손 볼 것
     private MBTIResponseDTO.MBTIResultDTO getMBTIType(MBTIResult mbtiResult) {
 
         Map<String, Integer> scores = mbtiResult.getScores();
@@ -108,16 +130,18 @@ public class MBTIService {
         Map<Character, Integer> result = new HashMap<>();
 
         for(String type : MBTIType) {
-            int score = scores.get(type);
-            int bias = total_bias.get(type);
+            int score = scores.getOrDefault(type, 0);
+            int bias = total_bias.getOrDefault(type, 1);
 
             int type_index = score > 0 ? 1 : 0;
             char type_result = type.charAt(type_index);
-            int type_ratio = (Math.abs(score) / bias) * 100;
+            int type_ratio = (Math.abs(score) * 100) / Math.max(bias, 1);
 
             mbtiType.append(type_result);
             result.put(type_result, type_ratio);
         }
+
+        mbtiInterimResultRedisRepository.delete(mbtiResult);
 
         return new MBTIResponseDTO.MBTIResultDTO(mbtiType.toString(), result);
     }
