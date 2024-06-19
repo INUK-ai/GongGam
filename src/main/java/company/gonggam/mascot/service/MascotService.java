@@ -8,10 +8,13 @@ import company.gonggam.mascot.dto.MascotRequestDTO;
 import company.gonggam.mascot.repository.MemberMascotRepository;
 import company.gonggam.member.domain.Member;
 import company.gonggam.member.repository.MemberRepository;
+import company.gonggam.question.domain.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static company.gonggam.mascot.dto.MascotResponseDTO.MainMascotListDTO;
 
@@ -23,6 +26,8 @@ public class MascotService {
 
     private final MemberRepository memberRepository;
     private final MemberMascotRepository memberMascotRepository;
+
+    private static final int DAILY_QUESTION_SIZE = 50;
 
     /*
         Member Mascot 생성
@@ -38,6 +43,12 @@ public class MascotService {
         member.setMainMascot(memberMascot);
 
         memberMascotRepository.save(memberMascot);
+
+        List<Question> questionList = getRandomQuestions(memberMascot.getMascotType(), memberMascot.getLevel(), DAILY_QUESTION_SIZE);
+    }
+
+    private List<Question> getRandomQuestions(MascotType mascotType, int level, int dailyQuestionSize) {
+        return null;
     }
 
     /*

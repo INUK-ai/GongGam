@@ -59,4 +59,8 @@ public class QuestionService {
         return memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.FAILED_GET_MEMBER_BY_ID));
     }
+
+//    public List<Question> getRandomQuestions(MascotType mascotType, int level, int size) {
+//        return questionRepository.findRandomQuestionsByTypeAndLevel(mascotType, level, size);
+//    }
 }
